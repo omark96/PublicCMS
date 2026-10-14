@@ -1,0 +1,106 @@
+﻿@page "/admin/posts/create"
+@rendermode InteractiveServer
+@inject PostService postService
+@inject NavigationManager Navigation
+
+<h3>Post Editor</h3>
+<div>
+	<button @onclick="()=>{editting = false;}">Preview</button>
+	<button @onclick="()=>{editting = true;}">Edit</button>
+</div>
+@if(editting) {
+<div>
+	<label>Title:</label>
+	<input @bind-value="Post.Title" />
+</div>
+<div class="post-elements">
+@foreach(var (element, i) in Post.Elements.Select((item, index) => (item, index)))
+{
+	<div class="post-element col-10" @key="element" >
+		@switch (element)
+		{
+			case ParagraphElement p:
+			{
+				<ParagraphEditor Element="p"/>
+				break;
+			}
+			case ImageElement img:
+			{
+				<ImageBlock Element="img"/>
+				break;
+			}
+		}
+		<div class="buttons">
+			<button class="btn btn-primary" @onclick="() => Move(i, i - 1)">↑</button>
+			<button class="btn btn-primary" @onclick="() => Move(i, i + 1)">↓</button>
+			<button class="btn btn-primary" @onclick="() => RemoveElement(i)">X</button>
+		</div>
+	</div>
+}
+</div>
+
+<input type="button" value="Add Paragraph" @onclick="AddParagraph" />
+<input type="button" value="Add Image" @onclick="AddImage" />
+} else
+{
+<PostView Post="Post"></PostView>
+}
+<div>
+	<button @onclick="Submit">Save</button>
+</div>
+
+@code {
+    public Post Post { get; set; } = new();
+
+    private bool editting = true;
+
+    protected override void OnInitialized()
+    {
+        Post.Title = "Some title";
+    }
+
+    private async Task Submit()
+    {
+        await postService.CreatePostAsync(Post);
+        Navigation.NavigateTo("/admin/posts");
+    }
+
+    public void AddParagraph()
+    {
+        Post.Elements.Add(new ParagraphElement());
+    }
+
+    public void AddImage()
+    {
+        Post.Elements.Add(new ImageElement());
+    }
+
+    public void RemoveElement(int index)
+    {
+        Post.Elements.Remove(Post.Elements[index]);
+        for (int i = 0; i < Post.Elements.Count; i++)
+        {
+            Post.Elements[i].Order = i;
+        }
+    }
+
+    private void Move(int start, int target)
+    {
+        if (start < 0 || start >= Post.Elements.Count)
+        {
+            return;
+        }
+
+        if (target < 0 || target >= Post.Elements.Count)
+        {
+            return;
+        }
+
+        (Post.Elements[start], Post.Elements[target]) = (Post.Elements[target], Post.Elements[start]);
+
+        for (int n = 0; n < Post.Elements.Count; n++)
+        {
+            Post.Elements[n].Order = n;
+        }
+    }
+}

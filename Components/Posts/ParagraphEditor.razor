@@ -1,0 +1,47 @@
+﻿@* <textarea value="@Element.Content" @onchange="Update">@Element.Content</textarea> *@
+<div class="paragraph-editor">
+	<div class="toolbar bg-body-secondary p-2">
+		<button class="btn btn-primary" onclick="document.execCommand('bold', false, null)">B</button>
+		<button class="btn btn-primary" onclick="document.execCommand('italic', false, null)">I</button>
+		<select onchange="document.execCommand('fontName', false, this.value)">
+			<option>Arial</option>
+			<option>Times New Roman</option>
+		</select>
+		<select onchange="document.execCommand('fontSize', false, this.value); this.selectedIndex = 0;">
+			<option disabled selected value> Size </option>
+			<option>1</option>
+			<option>2</option>
+			<option>3</option>
+			<option>4</option>
+			<option>5</option>
+			<option>6</option>
+			<option>7</option>
+		</select>
+	</div>
+	<div class="input p-1" contenteditable @oncontentchange="Update">
+		@((MarkupString)initial)
+	</div>
+</div>
+
+@code {
+	[Parameter]
+	required public ParagraphElement Element { get; set; }
+
+	private string initial = "";
+
+	protected override void OnInitialized()
+	{
+		initial = Element.Content;
+	}
+
+	private async Task Update(ContentChangeEventArgs e)
+	{
+		Element.Content = e.Value ?? "";
+		Console.WriteLine(Element.Content);
+	}
+
+	private void Test(MouseEventArgs args)
+	{
+		// Console.WriteLine("Test123");
+	}
+}

@@ -1,0 +1,14 @@
+﻿<div>
+	<input @bind-value="Element.Url" class="col-12" />
+	@if (Element.Url != "")
+	{
+		<img src="@Element.Url" class="col-12" />
+	}
+</div>
+
+@code {
+	[Parameter]
+	required public ImageElement Element { get; set; }
+
+	public string Url { get; set; } = "";
+}

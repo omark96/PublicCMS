@@ -1,0 +1,18 @@
+﻿@page "/admin/posts"
+@inject PostService postService
+
+<h3>PostList</h3>
+
+@foreach(var post in Posts)
+{
+    <p>@post.Title</p>
+}
+
+@code {
+    List<Post> Posts { get; set; } = [];
+
+    protected override async Task OnInitializedAsync()
+    {
+        Posts = await postService.GetAllPostsAsync();
+    }
+}

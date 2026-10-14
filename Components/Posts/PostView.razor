@@ -1,0 +1,25 @@
+﻿<h1>@Post.Title</h1>
+
+@foreach (var element in Post.Elements)
+{
+    @switch(element)
+    {
+        case ParagraphElement p:
+            {
+                <p>@((MarkupString)p.Content)</p>
+                break;
+            }
+        case ImageElement img:
+            {
+                <img src="@img.Url" />
+                break;
+            }
+    }
+}
+
+
+
+@code {
+    [Parameter]
+    public Post Post { get; set; } = default!;
+}
