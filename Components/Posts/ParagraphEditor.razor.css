@@ -1,9 +1,4 @@
 ﻿.paragraph-editor {
-    position: relative;
-    .input {
-        height: 100%;
-        min-width: 500px;
-    }
     .toolbar {
         display: none;
     }
@@ -11,7 +6,7 @@
 
 .paragraph-editor:focus-within {
     .toolbar {
-        display:block;
+        display:flex;
         position: absolute;
         top: -60px;
     }

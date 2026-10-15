@@ -24,4 +24,17 @@ public class PostService
         context.Posts.Add(post);
         await context.SaveChangesAsync();
     }
+
+    public async Task<Post?> GetPostAsync(int id)
+    {
+        return await context.Posts
+            .Include(p => p.Elements)
+            .FirstOrDefaultAsync(p => p.Id == id);
+    }
+
+    public async Task UpdatePostAsync(Post post)
+    {
+        context.Posts.Update(post);
+        await context.SaveChangesAsync();
+    }
 }

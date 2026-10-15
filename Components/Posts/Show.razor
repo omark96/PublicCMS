@@ -1,0 +1,23 @@
+﻿@page "/posts/{Id:int}"
+@rendermode InteractiveServer
+@inject PostService postService
+
+@if (Post is not null)
+{
+    <PostView Post="Post"></PostView>
+} else
+{
+    <p>No post found!</p>
+}
+
+@code {
+    [Parameter]
+    public int? Id { get; set; }
+
+    public Post? Post { get; set; }
+
+    protected override async Task OnParametersSetAsync()
+    {
+        Post = await postService.GetPostAsync(Id!.Value);
+    }
+}

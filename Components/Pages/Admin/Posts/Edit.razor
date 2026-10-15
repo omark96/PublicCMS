@@ -1,9 +1,12 @@
 ﻿@page "/admin/posts/create"
+@page "/admin/posts/{Id:int}/edit"
 @rendermode InteractiveServer
 @inject PostService postService
 @inject NavigationManager Navigation
 
-<h3>Post Editor</h3>
+@attribute [Authorize(Roles = "Admin")]
+
+<h3>@(IsEdit ? "Edit post" : "Create a new post")</h3>
 <div>
 	<button @onclick="()=>{editting = false;}">Preview</button>
 	<button @onclick="()=>{editting = true;}">Edit</button>
@@ -16,7 +19,8 @@
 <div class="post-elements">
 @foreach(var (element, i) in Post.Elements.Select((item, index) => (item, index)))
 {
-	<div class="post-element col-10" @key="element" >
+	<div class="d-flex gap-2 border p-2" @key="element">
+        <div class="flex-grow-1">
 		@switch (element)
 		{
 			case ParagraphElement p:
@@ -30,7 +34,8 @@
 				break;
 			}
 		}
-		<div class="buttons">
+        </div>
+		<div class="d-flex flex-column gap-1 flex-shrink-0">
 			<button class="btn btn-primary" @onclick="() => Move(i, i - 1)">↑</button>
 			<button class="btn btn-primary" @onclick="() => Move(i, i + 1)">↓</button>
 			<button class="btn btn-primary" @onclick="() => RemoveElement(i)">X</button>
@@ -50,18 +55,32 @@
 </div>
 
 @code {
+    [Parameter]
+    public int? Id { get; set; }
+
     public Post Post { get; set; } = new();
+
+    private bool IsEdit => Id is not null;
 
     private bool editting = true;
 
-    protected override void OnInitialized()
+    protected override async Task OnParametersSetAsync()
     {
-        Post.Title = "Some title";
+        if (IsEdit)
+        {
+            Post = await postService.GetPostAsync(Id!.Value) ?? new();
+        }
     }
 
     private async Task Submit()
     {
-        await postService.CreatePostAsync(Post);
+        if (IsEdit)
+        {
+            await postService.UpdatePostAsync(Post);
+        } else
+        {
+            await postService.CreatePostAsync(Post);
+        }
         Navigation.NavigateTo("/admin/posts");
     }
 

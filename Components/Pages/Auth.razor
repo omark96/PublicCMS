@@ -8,6 +8,10 @@
 
 <h1>You are authenticated</h1>
 
-<AuthorizeView>
-    Hello @context.User.Identity?.Name!
+<AuthorizeView Roles="Admin">
+    Hello @context.User.Identity?.Name
+    @if (context.User.IsInRole("Admin"))
+    {
+        <p>You are admin.</p>
+    }    
 </AuthorizeView>

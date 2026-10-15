@@ -1,13 +1,13 @@
 ﻿@* <textarea value="@Element.Content" @onchange="Update">@Element.Content</textarea> *@
-<div class="paragraph-editor">
+<div class="paragraph-editor position-relative">
 	<div class="toolbar bg-body-secondary p-2">
 		<button class="btn btn-primary" onclick="document.execCommand('bold', false, null)">B</button>
 		<button class="btn btn-primary" onclick="document.execCommand('italic', false, null)">I</button>
-		<select onchange="document.execCommand('fontName', false, this.value)">
+		<select class="form-select w-auto" onchange="document.execCommand('fontName', false, this.value)">
 			<option>Arial</option>
 			<option>Times New Roman</option>
 		</select>
-		<select onchange="document.execCommand('fontSize', false, this.value); this.selectedIndex = 0;">
+		<select class="form-select w-auto" onchange="document.execCommand('fontSize', false, this.value); this.selectedIndex = 0;">
 			<option disabled selected value> Size </option>
 			<option>1</option>
 			<option>2</option>
@@ -18,7 +18,7 @@
 			<option>7</option>
 		</select>
 	</div>
-	<div class="input p-1" contenteditable @oncontentchange="Update">
+	<div class="form-control h-100 text-break" contenteditable @oncontentchange="Update">
 		@((MarkupString)initial)
 	</div>
 </div>
