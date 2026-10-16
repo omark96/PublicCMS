@@ -1,0 +1,31 @@
+﻿@page "/galleries"
+@rendermode InteractiveServer
+
+@inject GalleryService galleryService
+
+<h3>Galleries</h3>
+
+<InputText @bind-Value="Name"></InputText>
+
+<button @onclick="CreateGallery">Create gallery</button>
+
+@foreach(var gallery in Galleries)
+{
+    <p>@gallery.Name</p>
+}
+
+@code {
+    private List<Gallery> Galleries { get; set; } = [];
+    public string Name { get; set; } = "";
+
+    protected override async Task OnInitializedAsync()
+    {
+        Galleries = await galleryService.GetGalleriesAsync();
+    }
+
+    private async Task CreateGallery()
+    {
+        await galleryService.CreateGalleryAsync(Name);
+        Galleries = await galleryService.GetGalleriesAsync();
+    }
+}

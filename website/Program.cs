@@ -34,10 +34,19 @@ public class Program
             .AddIdentityCookies();
 
         builder.Services.AddScoped<PostService>();
+        builder.Services.AddScoped<GalleryService>();
+
+        builder.Services.AddHttpClient("Api", h =>
+        {
+            h.BaseAddress = new Uri(builder.Configuration["ApiSettings:BaseUrl"]!);
+            h.DefaultRequestHeaders.Add("X-Api-Key", builder.Configuration["ApiKey"]);
+        });
 
         var connectionString = builder.Configuration.GetConnectionString("DefaultConnection") ?? throw new InvalidOperationException("Connection string 'DefaultConnection' not found.");
         builder.Services.AddDbContext<ApplicationDbContext>(options =>
-            options.UseSqlServer(connectionString));
+            options.UseSqlServer(connectionString,
+            x => x.MigrationsHistoryTable("__EFMigrationsHistory", "website")
+            ));
         builder.Services.AddDatabaseDeveloperPageExceptionFilter();
 
         builder.Services.AddIdentityCore<ApplicationUser>(options =>
@@ -93,11 +102,10 @@ public class Program
                 await roleManager.CreateAsync(new IdentityRole("Admin"));
             }
 
-            var email = config["Admin:Email"] ?? "";
+            var email = config["Admin:Email"];
             var password = config["Admin:Password"];
-            Console.WriteLine(email);
 
-            var admin = await userManager.FindByEmailAsync(email);
+            var admin = await userManager.FindByEmailAsync(email ?? "");
 
             if (email is not null
                 && password is not null

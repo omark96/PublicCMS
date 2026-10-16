@@ -19,6 +19,12 @@
         </div>
 
         <div class="nav-item px-3">
+            <NavLink class="nav-link" href="/galleries" Match="NavLinkMatch.All">
+                <span class="bi bi-house-door-fill-nav-menu" aria-hidden="true"></span> Galleries
+            </NavLink>
+        </div>
+
+        <div class="nav-item px-3">
             <NavLink class="nav-link" href="auth">
                 <span class="bi bi-lock-nav-menu" aria-hidden="true"></span> Auth Required
             </NavLink>
@@ -27,13 +33,13 @@
         <AuthorizeView Roles="Admin">
             <Authorized>
                 <div class="nav-item px-3">
-                    <NavLink class="nav-link" href="admin/posts/create">
+                    <NavLink class="nav-link" href="admin/posts/create" Match="NavLinkMatch.All">
                         <span class="bi bi-list-nested-nav-menu" aria-hidden="true"></span> Admin - Create Post
                     </NavLink>
                 </div>
 
                 <div class="nav-item px-3">
-                    <NavLink class="nav-link" href="admin/posts">
+                    <NavLink class="nav-link" href="admin/posts" Match="NavLinkMatch.All">
                         <span class="bi bi-list-nested-nav-menu" aria-hidden="true"></span> Admin - List Posts
                     </NavLink>
                 </div>

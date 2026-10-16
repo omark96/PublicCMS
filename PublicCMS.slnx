@@ -1,3 +1,4 @@
 <Solution>
-  <Project Path="PublicCMS.csproj" />
+  <Project Path="PublicCMS-API/PublicCMS-API.csproj" Id="a945f14b-5d6c-4a7e-bf7e-f49a94150b75" />
+  <Project Path="website/PublicCMS.csproj" />
 </Solution>

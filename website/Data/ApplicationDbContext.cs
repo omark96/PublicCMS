@@ -15,6 +15,8 @@ public class ApplicationDbContext(DbContextOptions<ApplicationDbContext> options
     {
         base.OnModelCreating(builder);
 
+        builder.HasDefaultSchema("website");
+
         builder.Entity<PostElement>()
             .HasDiscriminator<string>("ElementType")
             .HasValue<ParagraphElement>("Paragraph")
