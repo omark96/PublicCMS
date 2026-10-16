@@ -1,0 +1,47 @@
+﻿@if (Show)
+{
+    <div class="modal d-block" @onclick="Close">
+        <div class="modal-dialog" @onclick:stopPropagation="true">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h1 class="modal-title fs-5">@Title</h1>
+                    <button type="button" class="btn-close" @onclick="Close"></button>
+                </div>
+                @if (ModalBody is not null)
+                {
+                <div class="modal-body">
+                    @ModalBody
+                </div>
+                }
+                @if(ModalFooter is not null)
+                {
+                    <div class="modal-footer">
+                        @ModalFooter
+                    </div>
+                }
+            </div>
+        </div>
+    </div>
+    <div class="modal-backdrop show"></div>
+}
+
+@code {
+
+    [Parameter]
+    public bool Show { get; set; }
+
+    [Parameter]
+    public EventCallback<bool> ShowChanged { get; set; }
+
+    [Parameter]
+    public string Title { get; set; } = "";
+
+    [Parameter]
+    public RenderFragment? ModalBody { get; set; }
+
+    [Parameter]
+    public RenderFragment? ModalFooter { get; set; }
+
+    private Task Close() => ShowChanged.InvokeAsync(false);
+}
+

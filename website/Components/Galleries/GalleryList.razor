@@ -1,0 +1,18 @@
+﻿<div class="list-group">
+@foreach (var gallery in Galleries)
+{
+    <button 
+        class="list-group-item list-group-item-action @(gallery.Id == SelectedGallery?.Id ? "active" : "")"
+        @onclick="() => SelectedGalleryChanged.InvokeAsync(gallery)">
+        @gallery.Name
+    </button>
+}
+</div>
+@code {
+    [Parameter]
+    public List<Gallery> Galleries { get; set; } = [];
+    [Parameter]
+    public Gallery? SelectedGallery{ get; set; }
+    [Parameter]
+    public EventCallback<Gallery?> SelectedGalleryChanged { get; set; }
+}

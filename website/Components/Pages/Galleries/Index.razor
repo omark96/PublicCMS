@@ -1,4 +1,5 @@
 ﻿@page "/galleries"
+@using PublicCMS.Components.Galleries
 @rendermode InteractiveServer
 
 @inject GalleryService galleryService
@@ -8,15 +9,23 @@
 <InputText @bind-Value="Name"></InputText>
 
 <button @onclick="CreateGallery">Create gallery</button>
+<br />
+<button type="button" class="btn btn-primary" @onclick="() => showModal = true">
+    Select gallery
+</button>
 
-@foreach(var gallery in Galleries)
-{
-    <p>@gallery.Name</p>
-}
+<p>You have selected: @selectedGallery?.Name</p>
+
+<GalleryPickerModal 
+    @bind-Show="showModal" 
+    @bind-SelectedGallery="selectedGallery" 
+    Galleries="Galleries"/>
 
 @code {
     private List<Gallery> Galleries { get; set; } = [];
-    public string Name { get; set; } = "";
+    private string Name { get; set; } = "";
+    private bool showModal;
+    private Gallery? selectedGallery;
 
     protected override async Task OnInitializedAsync()
     {
