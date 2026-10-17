@@ -1,0 +1,10 @@
+﻿@page "/admin"
+@attribute [Authorize(Roles = "Admin")]
+
+<h3>Admin page</h3>
+
+<ul>
+    <li>
+        <a href="/admin/posts">Manage posts</a>
+    </li>
+</ul>
