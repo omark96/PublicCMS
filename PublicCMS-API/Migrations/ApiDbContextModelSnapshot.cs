@@ -42,6 +42,51 @@ namespace PublicCMS_API.Migrations
 
                     b.ToTable("Galleries", "api");
                 });
+
+            modelBuilder.Entity("PublicCMS_API.Models.GalleryImage", b =>
+                {
+                    b.Property<int>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("int");
+
+                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
+
+                    b.Property<int>("GalleryId")
+                        .HasColumnType("int");
+
+                    b.Property<Guid>("Guid")
+                        .HasColumnType("uniqueidentifier");
+
+                    b.Property<string>("Name")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<string>("Path")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("GalleryId");
+
+                    b.ToTable("Images", "api");
+                });
+
+            modelBuilder.Entity("PublicCMS_API.Models.GalleryImage", b =>
+                {
+                    b.HasOne("PublicCMS_API.Models.Gallery", "Gallery")
+                        .WithMany("Images")
+                        .HasForeignKey("GalleryId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.Navigation("Gallery");
+                });
+
+            modelBuilder.Entity("PublicCMS_API.Models.Gallery", b =>
+                {
+                    b.Navigation("Images");
+                });
 #pragma warning restore 612, 618
         }
     }

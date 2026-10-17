@@ -1,0 +1,26 @@
+﻿<div class="row row-cols-2" >
+    @foreach (var image in Images)
+    {
+        @* <img class="list-group-item list-group-item-action @(image.Guid == SelectedImage?.Guid ? "active" : "")"
+                @onclick="() => SelectedImageChanged.InvokeAsync(image)"/> *@
+                @* <p>@image.Name</p> *@
+        <img class="img-fluid" style="max-height: 150px; object-fit:contain;" src="https://localhost:7272/api/images/@image.Guid" />
+    }
+    <InputFile OnChange="Upload" multiple accept="image/*" />
+</div>
+<button class="btn btn-primary" @onclick="() => SelectedImageChanged.InvokeAsync(SelectedImage)" disabled="@(SelectedImage is null)">Select</button>
+@code {
+    [Parameter]
+    public List<GalleryImage> Images { get; set; } = [];
+    [Parameter]
+    public GalleryImage? SelectedImage { get; set; }
+    [Parameter]
+    public EventCallback<GalleryImage?> SelectedImageChanged { get; set; }
+    [Parameter] 
+    public EventCallback<IReadOnlyList<IBrowserFile>> OnUpload { get; set; }
+
+    private async Task Upload(InputFileChangeEventArgs e)
+    {
+        await OnUpload.InvokeAsync(e.GetMultipleFiles(maximumFileCount: 20));
+    }
+}

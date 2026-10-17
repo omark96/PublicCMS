@@ -2,11 +2,17 @@
 @foreach (var gallery in Galleries)
 {
     <button 
-        class="list-group-item list-group-item-action @(gallery.Id == SelectedGallery?.Id ? "active" : "")"
+        class="list-group-item list-group-item-action @(gallery.Guid == SelectedGallery?.Guid ? "active" : "")"
         @onclick="() => SelectedGalleryChanged.InvokeAsync(gallery)">
         @gallery.Name
     </button>
 }
+
+<form @onsubmit="Create">
+    <input class="form-text" @bind="newGalleryName" placeholder="New gallery name" />
+    <button class="btn btn-primary" type="submit" disabled = "@string.IsNullOrWhiteSpace(newGalleryName)">Create</button>
+</form>
+
 </div>
 @code {
     [Parameter]
@@ -15,4 +21,14 @@
     public Gallery? SelectedGallery{ get; set; }
     [Parameter]
     public EventCallback<Gallery?> SelectedGalleryChanged { get; set; }
+    [Parameter]
+    public EventCallback<string> OnCreate { get; set; }
+
+    string newGalleryName = "";
+
+    async Task Create()
+    {
+        await OnCreate.InvokeAsync(newGalleryName.Trim());
+        newGalleryName = "";
+    }
 }

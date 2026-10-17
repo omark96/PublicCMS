@@ -40,6 +40,8 @@ public class Program
 
         app.MapControllers();
 
+        app.UseStaticFiles();
+
         using (var scope = app.Services.CreateScope())
         {
             var db = scope.ServiceProvider.GetRequiredService<ApiDbContext>();

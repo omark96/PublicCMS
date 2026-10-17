@@ -1,0 +1,81 @@
+﻿@using PublicCMS.Components.Utils
+@inject GalleryService galleryService
+
+<Modal Show="Show" ShowChanged="Close" Title="@Title">
+    <ModalBody>
+        @if(selectedGallery is null)
+        {
+            <GalleryList 
+                Galleries="galleries"
+                SelectedGalleryChanged="GallerySelected" 
+                OnCreate="CreateGallery"
+                />
+        } else
+        {
+            <ImageGrid 
+                Images="images"
+                SelectedImageChanged="ImageSelected"
+                OnUpload="UploadImages"
+                />
+        }
+
+    </ModalBody>
+</Modal>
+
+@code {
+
+    [Parameter]
+    public bool Show { get; set; }
+
+    [Parameter]
+    public EventCallback<bool> ShowChanged { get; set; }
+
+    [Parameter]
+    public GalleryImage? SelectedImage { get; set; }
+    [Parameter]
+    public EventCallback<GalleryImage?> SelectedImageChanged { get; set; }
+
+    private List<Gallery> galleries = [];
+    private List<GalleryImage> images = [];
+    private Gallery? selectedGallery;
+    private string Title => "Galleries";
+
+    protected override async Task OnParametersSetAsync()
+    {
+        galleries = await galleryService.GetGalleriesAsync();
+    }
+
+    private async Task Close() {
+        selectedGallery = null;
+        await ShowChanged.InvokeAsync(false);
+    }
+
+    private async Task GallerySelected(Gallery? gallery)
+    {
+        if (gallery is null)
+        {
+            return;
+        }
+        selectedGallery = gallery;
+        images = await galleryService.GetImagesAsync(selectedGallery.Guid);
+    }
+
+    private async Task ImageSelected(GalleryImage? image)
+    {
+        await SelectedImageChanged.InvokeAsync(image);
+        await Close();
+    }
+
+    private async Task CreateGallery(string name)
+    {
+        var created = await galleryService.CreateGalleryAsync(name);
+        galleries.Add(created);
+        await GallerySelected(created);
+    }
+
+    private async Task UploadImages(IReadOnlyList<IBrowserFile> files)
+    {
+        var uploadedImages = await galleryService.UploadImagesAsync(selectedGallery!.Guid, files);
+        images.AddRange(uploadedImages);
+    }
+}

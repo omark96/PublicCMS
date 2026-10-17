@@ -5,11 +5,6 @@
 @inject GalleryService galleryService
 
 <h3>Galleries</h3>
-
-<InputText @bind-Value="Name"></InputText>
-
-<button @onclick="CreateGallery">Create gallery</button>
-<br />
 <button type="button" class="btn btn-primary" @onclick="() => showModal = true">
     Select gallery
 </button>
@@ -18,23 +13,22 @@
 
 <GalleryPickerModal 
     @bind-Show="showModal" 
-    @bind-SelectedGallery="selectedGallery" 
-    Galleries="Galleries"/>
+    @bind-SelectedGallery="selectedGallery"
+    />
+
+<button type="button" class="btn btn-primary" @onclick="() => showImageModal = true">
+    Select image
+</button>
+
+<ImagePickerModal 
+    @bind-Show="showImageModal"
+    @bind-SelectedImage="selectedImage" 
+    />
 
 @code {
-    private List<Gallery> Galleries { get; set; } = [];
     private string Name { get; set; } = "";
     private bool showModal;
+    private bool showImageModal;
     private Gallery? selectedGallery;
-
-    protected override async Task OnInitializedAsync()
-    {
-        Galleries = await galleryService.GetGalleriesAsync();
-    }
-
-    private async Task CreateGallery()
-    {
-        await galleryService.CreateGalleryAsync(Name);
-        Galleries = await galleryService.GetGalleriesAsync();
-    }
+    private GalleryImage? selectedImage;
 }

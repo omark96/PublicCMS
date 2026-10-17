@@ -1,10 +1,13 @@
 ﻿@using PublicCMS.Components.Utils
+@inject GalleryService galleryService
 
-<Modal Show="Show" ShowChanged="ShowChanged" Title="Galleries">
+<Modal Show="Show" ShowChanged="Close" Title="Galleries">
     <ModalBody>
-        <GalleryList Galleries="Galleries"
+        <GalleryList 
+            Galleries="galleries"
             SelectedGallery="SelectedGallery"
             SelectedGalleryChanged="GallerySelected"
+            OnCreate="CreateGallery"
             />
     </ModalBody>
 </Modal>
@@ -19,10 +22,24 @@
     public Gallery? SelectedGallery { get; set; }
     [Parameter] 
     public EventCallback<Gallery?> SelectedGalleryChanged { get; set; }
-    [Parameter]
-    public List<Gallery> Galleries { get; set; } = [];
 
-    private Task Close() => ShowChanged.InvokeAsync(false);
+    private List<Gallery> galleries = [];
+    private bool wasOpened;
+
+    protected override async Task OnParametersSetAsync()
+    {
+        galleries = await galleryService.GetGalleriesAsync();
+    }
+
+    private async Task CreateGallery(string name)
+    {
+        Gallery gallery = await galleryService.CreateGalleryAsync(name);
+        await GallerySelected(gallery);
+    }
+
+    private async Task Close() {
+        await ShowChanged.InvokeAsync(false);
+    }
 
     private async Task GallerySelected(Gallery? gallery)
     {
