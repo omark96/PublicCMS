@@ -9,6 +9,7 @@ public class ApplicationDbContext(DbContextOptions<ApplicationDbContext> options
 {
     public DbSet<Post> Posts { get; set; }
     public DbSet<PostElement> PageElements { get; set; }
+    public DbSet<NavMenuItem> NavMenuItems { get; set; }
 
 
     protected override void OnModelCreating(ModelBuilder builder)

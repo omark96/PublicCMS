@@ -1,0 +1,93 @@
+﻿@page "/admin/navmenu"
+@inject NavMenuService navMenuService
+@inject NavigationManager navigationManager
+@rendermode InteractiveServer
+@attribute [Authorize(Roles = "Admin")]
+
+<h3>Nav menu editor</h3>
+
+@foreach(var (menuItem, i) in menuItems.Select((item, index) => (item, index)))
+{
+    <div class="d-flex gap-2 border p-2 mb-2">
+        <div>
+            <div>
+                <label class="form-label">
+                    Link:
+                    <InputText class="form-control" @bind-Value="@menuItem.Link"></InputText>
+                </label>
+            </div>
+            <div>
+                <label class="form-label">
+                    Text:
+                    <InputText class="form-control" @bind-Value="@menuItem.Text"></InputText>
+                </label>
+            </div>
+            <div>
+                <label class="form-label">
+                    Icon:
+                    <InputText class="form-control" @bind-Value="@menuItem.Icon"></InputText>
+                </label>
+            </div>
+            <div>
+                <label class="form-label">
+                    Visibility:
+                    <InputSelect class="form-select" @bind-Value="menuItem.Visibility">
+                        <option value="@NavMenuVisibility.Everyone">Everyone</option>
+                        <option value="@NavMenuVisibility.SignedInOnly">Signed in only</option>
+                        <option value="@NavMenuVisibility.GuestsOnly">Guests only</option>
+                        <option value="@NavMenuVisibility.AdminOnly">Admin only</option>
+                    </InputSelect>
+                </label>
+            </div>
+        </div>
+        <div class="d-flex flex-column gap-1 flex-shrink-0">
+            <button class="btn btn-primary" @onclick="() => Move(i, i - 1)">↑</button>
+		    <button class="btn btn-primary" @onclick="() => Move(i, i + 1)">↓</button>
+		    <button class="btn btn-primary" @onclick="() => Remove(i)">X</button>
+        </div>
+    </div>
+}
+
+<button class="btn btn-primary" @onclick="AddMenuItem">Add menu item</button>
+<hr />
+<button class="btn btn-primary" @onclick="Save">Save changes</button>
+
+@code {
+    private List<NavMenuItem> menuItems { get; set; } = [];
+
+    protected override async Task OnInitializedAsync()
+    {
+        menuItems = await navMenuService.GetMenuItemsAsync();
+    }
+
+    private void AddMenuItem()
+    {
+        menuItems.Add(new NavMenuItem());
+    }
+
+    private void Move(int start, int target)
+    {
+        if (start < 0 || start >= menuItems.Count)
+        {
+            return;
+        }
+
+        if (target < 0 || target >= menuItems.Count)
+        {
+            return;
+        }
+
+        (menuItems[start], menuItems[target]) = (menuItems[target], menuItems[start]);
+    }
+
+    public void Remove(int index)
+    {
+        menuItems.Remove(menuItems[index]);
+    }
+
+    private async Task Save()
+    {
+        await navMenuService.SaveMenuItems(menuItems);
+        navigationManager.NavigateTo(navigationManager.Uri, forceLoad: true);
+    }
+}

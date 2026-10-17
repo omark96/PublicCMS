@@ -243,6 +243,37 @@ namespace PublicCMS.Migrations
                     b.ToTable("AspNetUsers", "website");
                 });
 
+            modelBuilder.Entity("PublicCMS.Models.NavMenuItem", b =>
+                {
+                    b.Property<int>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("int");
+
+                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
+
+                    b.Property<string>("Icon")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<string>("Link")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<int>("Order")
+                        .HasColumnType("int");
+
+                    b.Property<string>("Text")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<int>("Visibility")
+                        .HasColumnType("int");
+
+                    b.HasKey("Id");
+
+                    b.ToTable("NavMenuItems", "website");
+                });
+
             modelBuilder.Entity("PublicCMS.Models.PageElements.PostElement", b =>
                 {
                     b.Property<int>("Id")

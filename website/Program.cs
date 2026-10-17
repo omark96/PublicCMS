@@ -35,6 +35,7 @@ public class Program
 
         builder.Services.AddScoped<PostService>();
         builder.Services.AddScoped<GalleryService>();
+        builder.Services.AddScoped<NavMenuService>();
 
         builder.Services.AddHttpClient("Api", h =>
         {
@@ -45,7 +46,7 @@ public class Program
         builder.Services.Configure<ApiSettings>(builder.Configuration.GetSection("ApiSettings"));
 
         var connectionString = builder.Configuration.GetConnectionString("DefaultConnection") ?? throw new InvalidOperationException("Connection string 'DefaultConnection' not found.");
-        builder.Services.AddDbContext<ApplicationDbContext>(options =>
+        builder.Services.AddDbContextFactory<ApplicationDbContext>(options =>
             options.UseSqlServer(connectionString,
             x => x.MigrationsHistoryTable("__EFMigrationsHistory", "website")
             ));
