@@ -1,9 +1,6 @@
 ﻿<div class="row row-cols-2" >
     @foreach (var image in Images)
     {
-        @* <img class="list-group-item list-group-item-action @(image.Guid == SelectedImage?.Guid ? "active" : "")"
-                @onclick="() => SelectedImageChanged.InvokeAsync(image)"/> *@
-                @* <p>@image.Name</p> *@
         <img class="img-fluid" 
         style="max-height: 150px; object-fit:contain;" 
         src="https://localhost:7272/api/images/@image.Guid" 
