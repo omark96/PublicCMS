@@ -20,6 +20,12 @@ public class GalleryService
 
     }
 
+    public async Task<Gallery> GetGalleryAsync(Guid guid)
+    {
+        var client = httpClientFactory.CreateClient("Api");
+        return await client.GetFromJsonAsync<Gallery>($"api/galleries/{guid}");
+    }
+
     public async Task<Gallery> CreateGalleryAsync(string name)
     {
         var client = httpClientFactory.CreateClient("Api");

@@ -13,7 +13,7 @@
 
 <GalleryPickerModal 
     @bind-Show="showModal" 
-    @bind-SelectedGallery="selectedGallery"
+    SelectedGalleryChanged="GallerySelected"
     />
 
 <button type="button" class="btn btn-primary" @onclick="() => showImageModal = true">
@@ -32,4 +32,9 @@
     private bool showImageModal;
     private Gallery? selectedGallery;
     private GalleryImage? selectedImage;
+
+    private async Task GallerySelected(Gallery gallery)
+    {
+        selectedGallery =  await galleryService.GetGalleryAsync(gallery.Guid);
+    }
 }

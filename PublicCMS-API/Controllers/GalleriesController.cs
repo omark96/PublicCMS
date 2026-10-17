@@ -18,36 +18,47 @@ public class GalleriesController : ControllerBase
     }
 
     [HttpGet]
-    public async Task<ActionResult<List<Gallery>>> GetGalleries()
+    public async Task<ActionResult<List<GalleryDto>>> GetGalleries()
     {
         return await galleryService.GetGalleriesAsync();
     }
 
-    [HttpPost]
-    public async Task<IActionResult> Create(Gallery gallery)
+    [HttpGet("{galleryId:guid}")]
+    public async Task<ActionResult<GalleryDto>> GetGallery(Guid galleryId)
     {
-        Gallery newGallery = await galleryService.CreateGalleryAsync(gallery.Name);
+        var gallery = await galleryService.GetGalleryAsync(galleryId);
+        if (gallery is null)
+        {
+            return NotFound();
+        }
+        return gallery;
+    }
 
-        return Created($"api/galleries/{newGallery.Id}", newGallery);
+    [HttpPost]
+    public async Task<IActionResult> Create(GalleryDto gallery)
+    {
+        var newGallery = await galleryService.CreateGalleryAsync(gallery.Name);
+
+        return Created($"api/galleries/{newGallery.Guid}", newGallery);
     }
 
     [HttpGet("{galleryId:guid}/images")]
-    public async Task<ActionResult<List<ImageInfo>>> GetImages(Guid galleryId)
+    public async Task<ActionResult<List<GalleryImageDto>>> GetImages(Guid galleryId)
     {
         var images = await galleryService.GetImagesAsync(galleryId);
-        return images.Select(i => new ImageInfo(i.Guid, i.Name)).ToList();
+        return images.Select(i => new GalleryImageDto(i.Guid, i.Name)).ToList();
     }
 
     [HttpPost("{galleryId:guid}/images")]
     [RequestSizeLimit(50 * 1024 * 1024)]
     public async Task<IActionResult> UploadImages(Guid galleryId, List<IFormFile> files)
     {
-        var created = new List<ImageInfo>();
+        var created = new List<GalleryImageDto>();
         foreach (var file in files)
         {
             await using var stream = file.OpenReadStream();
             var image = await galleryService.UploadImageAsync(galleryId, stream, file.FileName);
-            created.Add(new ImageInfo(image.Guid, image.Name));
+            created.Add(new GalleryImageDto(image.Guid, image.Name));
         }
         return Ok(created);
     }

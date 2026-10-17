@@ -15,12 +15,18 @@ public class GalleryService
         this.env = env;
     }
 
-    public async Task<List<Gallery>> GetGalleriesAsync()
+    public async Task<List<GalleryDto>> GetGalleriesAsync()
     {
-        return await context.Galleries.ToListAsync();
+        return await context.Galleries
+            .Select(g => new GalleryDto(
+                Guid: g.Guid,
+                Name: g.Name,
+                Images: new()
+                ))
+            .ToListAsync();
     }
 
-    public async Task<Gallery> CreateGalleryAsync(string name)
+    public async Task<GalleryDto> CreateGalleryAsync(string name)
     {
         Gallery gallery = new()
         {
@@ -30,12 +36,25 @@ public class GalleryService
         context.Galleries.Add(gallery);
         await context.SaveChangesAsync();
 
-        return gallery;
+        return new GalleryDto(
+            gallery.Guid,
+            gallery.Name,
+            []
+            );
     }
-    public async Task<Gallery?> GetGalleryAsync(int id)
+    public async Task<GalleryDto?> GetGalleryAsync(Guid galleryGuid)
     {
-        return await context.Galleries
-            .FirstOrDefaultAsync(g => g.Id == id);
+        var gallery = await context.Galleries
+            .Where(g => g.Guid == galleryGuid)
+            .Select(g => new GalleryDto(
+                g.Guid,
+                g.Name,
+                g.Images.Select(i => new GalleryImageDto(i.Guid, i.Name)
+                )
+                .ToList()))
+            .FirstOrDefaultAsync();
+
+        return gallery;
     }
 
     public async Task<List<GalleryImage>> GetImagesAsync(Guid galleryId)
