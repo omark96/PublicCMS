@@ -40,7 +40,11 @@ public class GalleryService
 
     public async Task<List<GalleryImage>> GetImagesAsync(Guid galleryId)
     {
-        return await context.Images.ToListAsync();
+        var gallery = await context.Galleries
+            .Include(g => g.Images)
+            .FirstOrDefaultAsync(g => g.Guid == galleryId);
+
+        return gallery?.Images.ToList() ?? [];
     }
 
     public async Task<GalleryImage> UploadImageAsync(Guid galleryGuid, Stream stream, string fileName)
