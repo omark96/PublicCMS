@@ -42,6 +42,8 @@ public class Program
             h.DefaultRequestHeaders.Add("X-Api-Key", builder.Configuration["ApiKey"]);
         });
 
+        builder.Services.Configure<ApiSettings>(builder.Configuration.GetSection("ApiSettings"));
+
         var connectionString = builder.Configuration.GetConnectionString("DefaultConnection") ?? throw new InvalidOperationException("Connection string 'DefaultConnection' not found.");
         builder.Services.AddDbContext<ApplicationDbContext>(options =>
             options.UseSqlServer(connectionString,

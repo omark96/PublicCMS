@@ -2,5 +2,5 @@
 
 public class ImageElement : PostElement
 {
-    public string Url { get; set; } = "";
+    public Guid? Guid { get; set; }
 }

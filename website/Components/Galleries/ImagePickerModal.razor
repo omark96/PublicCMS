@@ -31,9 +31,7 @@
     public EventCallback<bool> ShowChanged { get; set; }
 
     [Parameter]
-    public GalleryImage? SelectedImage { get; set; }
-    [Parameter]
-    public EventCallback<GalleryImage?> SelectedImageChanged { get; set; }
+    public EventCallback<GalleryImage?> OnSelected { get; set; }
 
     private List<Gallery> galleries = [];
     private List<GalleryImage> images = [];
@@ -62,7 +60,7 @@
 
     private async Task ImageSelected(GalleryImage? image)
     {
-        await SelectedImageChanged.InvokeAsync(image);
+        await OnSelected.InvokeAsync(image);
         await Close();
     }
 

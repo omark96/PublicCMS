@@ -22,8 +22,9 @@
 
 <ImagePickerModal 
     @bind-Show="showImageModal"
-    @bind-SelectedImage="selectedImage" 
+    OnSelected="ImageSelected" 
     />
+<p>You have selected: @selectedImage?.Name</p>
 
 @code {
     private string Name { get; set; } = "";
@@ -31,4 +32,9 @@
     private bool showImageModal;
     private Gallery? selectedGallery;
     private GalleryImage? selectedImage;
+
+    private void ImageSelected(GalleryImage image)
+    {
+        selectedImage = image;
+    }
 }

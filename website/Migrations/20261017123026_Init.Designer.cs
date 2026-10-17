@@ -12,7 +12,7 @@ using PublicCMS.Data;
 namespace PublicCMS.Migrations
 {
     [DbContext(typeof(ApplicationDbContext))]
-    [Migration("20261015190511_Init")]
+    [Migration("20261017123026_Init")]
     partial class Init
     {
         /// <inheritdoc />
@@ -300,9 +300,8 @@ namespace PublicCMS.Migrations
                 {
                     b.HasBaseType("PublicCMS.Models.PageElements.PostElement");
 
-                    b.Property<string>("Url")
-                        .IsRequired()
-                        .HasColumnType("nvarchar(max)");
+                    b.Property<Guid>("Guid")
+                        .HasColumnType("uniqueidentifier");
 
                     b.HasDiscriminator().HasValue("Image");
                 });

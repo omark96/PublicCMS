@@ -218,7 +218,7 @@ namespace PublicCMS.Migrations
                     PostId = table.Column<int>(type: "int", nullable: false),
                     Order = table.Column<int>(type: "int", nullable: false),
                     ElementType = table.Column<string>(type: "nvarchar(13)", maxLength: 13, nullable: false),
-                    Url = table.Column<string>(type: "nvarchar(max)", nullable: true),
+                    Guid = table.Column<Guid>(type: "uniqueidentifier", nullable: true),
                     Content = table.Column<string>(type: "nvarchar(max)", nullable: true)
                 },
                 constraints: table =>

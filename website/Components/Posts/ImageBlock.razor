@@ -1,14 +1,29 @@
-﻿<div>
-	<input @bind-value="Element.Url" class="col-12" />
-	@if (Element.Url != "")
+﻿@using PublicCMS.Components.Galleries
+@inject IOptions<ApiSettings> Api
+
+<div>
+	@if (Element.Guid is not null)
 	{
-		<img src="@Element.Url" class="col-12" />
+		<img src="@Api.Value.ImageUrl(Element.Guid.Value)" class="col-12" />
 	}
+	<button type="button" class="btn btn-primary" @onclick="() => showImageModal = true">
+		Select image
+	</button>
+
+	<ImagePickerModal 
+		@bind-Show="showImageModal"
+		OnSelected="ImageSelected"
+		/>
 </div>
 
 @code {
 	[Parameter]
 	required public ImageElement Element { get; set; }
+	private bool showImageModal;
 
-	public string Url { get; set; } = "";
+	private void ImageSelected(GalleryImage image)
+	{
+		Element.Guid = image.Guid;
+		StateHasChanged();
+	}
 }

@@ -1,4 +1,5 @@
-﻿<h1>@Post.Title</h1>
+﻿@inject IOptions<ApiSettings> Api
+<h1>@Post.Title</h1>
 
 @foreach (var element in Post.Elements)
 {
@@ -11,7 +12,7 @@
             }
         case ImageElement img:
             {
-                <img src="@img.Url" />
+                <img src="@Api.Value.ImageUrl(img.Guid.Value)" />
                 break;
             }
     }

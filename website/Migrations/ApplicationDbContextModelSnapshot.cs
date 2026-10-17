@@ -297,9 +297,8 @@ namespace PublicCMS.Migrations
                 {
                     b.HasBaseType("PublicCMS.Models.PageElements.PostElement");
 
-                    b.Property<string>("Url")
-                        .IsRequired()
-                        .HasColumnType("nvarchar(max)");
+                    b.Property<Guid>("Guid")
+                        .HasColumnType("uniqueidentifier");
 
                     b.HasDiscriminator().HasValue("Image");
                 });
