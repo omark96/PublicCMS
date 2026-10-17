@@ -1,5 +1,6 @@
 ﻿@page "/"
 @rendermode InteractiveServer
+@inject IOptions<ApiSettings> Api
 @inject PostService postService
 <PageTitle>Home</PageTitle>
 
@@ -11,7 +12,10 @@
         <section class="card card-row" style="max-width: 1000px">
             <div class="row g-0">
                 <div class="col-md-4">
-                    <img src="./UserImages/wp10.jpeg" class="img-fluid rounded-start" style="height: 100%; object-fit: cover;"/>
+                    @if (post.FeaturedImageGuid is Guid imageGuid)
+                    {
+                        <img src="@Api.Value.ImageUrl(imageGuid)" class="img-fluid rounded-start" style="height: 100%; object-fit: cover;"/>
+                    }
                 </div>
                 <div class="col-md-8">
                     <div class="card-body">

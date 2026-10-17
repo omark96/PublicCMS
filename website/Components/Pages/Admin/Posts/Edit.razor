@@ -1,8 +1,10 @@
 ﻿@page "/admin/posts/create"
 @page "/admin/posts/{Id:int}/edit"
+@using PublicCMS.Components.Galleries
 @rendermode InteractiveServer
 @inject PostService postService
 @inject NavigationManager Navigation
+@inject IOptions<ApiSettings> Api
 
 @attribute [Authorize(Roles = "Admin")]
 
@@ -15,6 +17,20 @@
 <div>
 	<label>Title:</label>
 	<input @bind-value="Post.Title" />
+</div>
+<div>
+    <h2>Featured image:</h2>
+        @if(Post.FeaturedImageGuid is Guid imageGuid)
+        {
+            <img src="@Api.Value.ImageUrl(imageGuid)" class="col-12" />
+        }
+        <ImagePickerModal 
+		    @bind-Show="showImageModal"
+		    OnSelected="img => Post.FeaturedImageGuid = img.Guid"
+		/>
+    <button type="button" class="btn btn-primary" @onclick="() => showImageModal = true">
+	    Select image
+    </button>
 </div>
 <div class="post-elements">
 @foreach(var (element, i) in Post.Elements.Select((item, index) => (item, index)))
@@ -61,8 +77,8 @@
     public Post Post { get; set; } = new();
 
     private bool IsEdit => Id is not null;
-
     private bool editting = true;
+    private bool showImageModal;
 
     protected override async Task OnParametersSetAsync()
     {

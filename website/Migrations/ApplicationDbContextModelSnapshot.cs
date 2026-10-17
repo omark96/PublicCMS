@@ -284,6 +284,9 @@ namespace PublicCMS.Migrations
                     b.Property<DateTime>("CreatedAt")
                         .HasColumnType("datetime2");
 
+                    b.Property<Guid?>("FeaturedImageGuid")
+                        .HasColumnType("uniqueidentifier");
+
                     b.Property<string>("Title")
                         .IsRequired()
                         .HasColumnType("nvarchar(max)");
@@ -297,7 +300,7 @@ namespace PublicCMS.Migrations
                 {
                     b.HasBaseType("PublicCMS.Models.PageElements.PostElement");
 
-                    b.Property<Guid>("Guid")
+                    b.Property<Guid?>("Guid")
                         .HasColumnType("uniqueidentifier");
 
                     b.HasDiscriminator().HasValue("Image");
