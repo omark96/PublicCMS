@@ -1,0 +1,95 @@
+﻿@page "/admin/themes"
+@rendermode InteractiveServer
+@inject ThemeService themeService
+@attribute [Authorize(Roles = "Admin")]
+
+<h3>Themes</h3>
+
+<div>
+    <label class="form-label">
+        Select theme:
+        <select class="form-select" @bind="selectedThemeId">
+            @foreach(var theme in themes)
+            {
+                <option value="@theme.Id">@theme.Name</option>
+            }
+        </select>
+    </label>
+</div>
+
+@if (SelectedTheme is not null)
+{
+<div>
+    <div>
+        <label class="form-label">
+            Name:
+            <input class="form-control" @bind="@SelectedTheme.Name"></input>
+        </label>
+    </div>
+    <div>
+        <label class="form-label">
+            Header CSS:
+            <textarea class="form-control" @bind="@SelectedTheme.HeaderCss"></textarea>
+        </label>
+    </div>
+    <div>
+        <label class="form-label">
+            Image CSS:
+            <textarea class="form-control" @bind="@SelectedTheme.ImageCss"></textarea>
+        </label>
+    </div>
+    <div>
+        <label class="form-label">
+            Paragraph CSS:
+            <textarea class="form-control" @bind="@SelectedTheme.ParagraphCss"></textarea>
+        </label>
+    </div>
+    <div>
+        <label class="form-label">
+            Link CSS:
+            <textarea class="form-control" @bind="@SelectedTheme.LinkCss"></textarea>
+        </label>
+    </div>
+</div>
+<div>
+    <button class="btn btn-primary me-2" @onclick="Save">Save changes</button>
+    <button class="btn btn-primary" @onclick="SetSelectedTheme">Set as theme</button>
+</div>
+}
+<hr />
+<button class="btn btn-primary" @onclick="Create">New theme</button>
+
+@code {
+    private int selectedThemeId;
+    private Theme? SelectedTheme => themes.FirstOrDefault(t => t.Id == selectedThemeId);
+    private List<Theme> themes = [];
+
+    protected override async Task OnInitializedAsync()
+    {
+        themes = await themeService.GetThemesAsync();
+        selectedThemeId = themes.FirstOrDefault(t => t.IsSelected)?.Id ?? 0;
+    }
+
+    public async Task Create()
+    {
+        Theme newTheme = await themeService.CreateThemeAsync("DefaultTheme");
+        themes.Add(newTheme);
+        selectedThemeId = newTheme.Id;
+    }
+
+    public async Task Save()
+    {
+        if (SelectedTheme is Theme theme)
+        {
+            await themeService.SaveThemeAsync(theme);
+        }
+    }
+
+    public async Task SetSelectedTheme()
+    {
+        if (SelectedTheme is Theme theme)
+        {
+            await themeService.SetSelectedThemeAsync(theme);
+        }
+    }
+}

@@ -1,5 +1,6 @@
 ﻿@inject IOptions<ApiSettings> Api
-<h1>@Post.Title</h1>
+
+<h1 class="post-header">@Post.Title</h1>
 
 @foreach (var element in Post.Elements)
 {
@@ -7,12 +8,12 @@
     {
         case ParagraphElement p:
             {
-                <p>@((MarkupString)p.Content)</p>
+                <p class="post-paragraph">@((MarkupString)p.Content)</p>
                 break;
             }
         case ImageElement img:
             {
-                <img src="@Api.Value.ImageUrl(img.Guid.Value)" />
+                <img class="post-image" src="@Api.Value.ImageUrl(img.Guid.Value)" />
                 break;
             }
     }

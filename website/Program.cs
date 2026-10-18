@@ -36,6 +36,7 @@ public class Program
         builder.Services.AddScoped<PostService>();
         builder.Services.AddScoped<GalleryService>();
         builder.Services.AddScoped<NavMenuService>();
+        builder.Services.AddScoped<ThemeService>();
 
         builder.Services.AddHttpClient("Api", h =>
         {
@@ -90,6 +91,16 @@ public class Program
 
         // Add additional endpoints required by the Identity /Account Razor components.
         app.MapAdditionalIdentityEndpoints();
+
+        app.MapGet("/theme.css", async (ApplicationDbContext context) =>
+        {
+            var css = await context.Themes
+                .Where(t => t.IsSelected)
+                .Select(t => t.Css)
+                .FirstOrDefaultAsync();
+
+            return Results.Text(css ?? "", "text/css");
+        });
 
         using (var scope = app.Services.CreateScope())
         {

@@ -4,8 +4,6 @@ using PublicCMS_API.Services;
 
 namespace PublicCMS_API.Controllers;
 
-
-
 [Route("api/[controller]")]
 [ApiController]
 public class GalleriesController : ControllerBase
