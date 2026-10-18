@@ -20,6 +20,7 @@
 @if (SelectedTheme is not null)
 {
 <div>
+    <div>Activated: @SelectedTheme.IsSelected</div>
     <div>
         <label class="form-label">
             Name:
@@ -51,9 +52,10 @@
         </label>
     </div>
 </div>
-<div>
-    <button class="btn btn-primary me-2" @onclick="Save">Save changes</button>
+<div class="d-flex g-2">
+    <button class="btn btn-primary" @onclick="Save">Save changes</button>
     <button class="btn btn-primary" @onclick="SetSelectedTheme">Set as theme</button>
+    <button class="btn btn-danger" @onclick="RemoveSelectedTheme" disabled="@(themes.Count <= 1)">Remove theme</button>
 </div>
 }
 <hr />
@@ -90,6 +92,28 @@
         if (SelectedTheme is Theme theme)
         {
             await themeService.SetSelectedThemeAsync(theme);
+        }
+    }
+
+    public async Task RemoveSelectedTheme()
+    {
+        if (themes.Count <= 1)
+        {
+            return;
+        }
+        bool currentTheme = false;
+        if (SelectedTheme is Theme theme)
+        {
+            currentTheme = theme.IsSelected;
+            await themeService.RemoveThemeAsync(theme);
+        }
+
+        themes = await themeService.GetThemesAsync();
+
+        selectedThemeId = themes.First().Id;
+        if (currentTheme)
+        {
+            await SetSelectedTheme();
         }
     }
 }

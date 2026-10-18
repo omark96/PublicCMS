@@ -59,4 +59,11 @@ public class ThemeService
     {
         return await context.Themes.FirstOrDefaultAsync(t => t.IsSelected);
     }
+
+    public async Task RemoveThemeAsync(Theme theme)
+    {
+        context.Themes.Remove(theme);
+
+        await context.SaveChangesAsync();
+    }
 }
