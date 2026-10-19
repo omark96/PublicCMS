@@ -37,6 +37,7 @@ public class Program
         builder.Services.AddScoped<GalleryService>();
         builder.Services.AddScoped<NavMenuService>();
         builder.Services.AddScoped<ThemeService>();
+        builder.Services.AddScoped<PluginService>();
 
         builder.Services.AddHttpClient("Api", h =>
         {

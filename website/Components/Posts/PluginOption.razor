@@ -1,0 +1,33 @@
+﻿@inject PluginService pluginService
+
+<label class="form-label">
+    @Source.Name:
+    <select class="form-select" @bind:get="Value" @bind:set="OnValueChanged">
+        <option value="">-- Select --</option>
+        @foreach(var option in Source.Options)
+        {
+            <option value="@option">@option</option>
+        }
+    </select>
+</label>
+
+@code {
+    [Parameter]
+    public OptionSource Source { get; set; }
+
+    [Parameter]
+    public string Value { get; set; }
+    [Parameter]
+    public EventCallback<string> ValueChanged { get; set; }
+
+    protected async override Task OnInitializedAsync()
+    {
+        Source.Options = await pluginService.GetOptionsAsync(Source);
+    }
+
+    private async Task OnValueChanged(string value)
+    {
+        Value = value;
+        await ValueChanged.InvokeAsync(value);
+    }
+}

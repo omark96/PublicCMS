@@ -1,0 +1,56 @@
+﻿@inject PluginService pluginService
+
+<h3>PluginBlock</h3>
+
+<div>
+    <label class="form-label">
+        Select plugin:
+        <select class="form-select" @bind="Element.PluginDefinitionId" @bind:after="Update">
+            @foreach(var pluginDefinition in pluginDefinitions)
+            {
+                <option value="@pluginDefinition.Id">@pluginDefinition.Name</option>
+            }
+        </select>
+    </label>
+    <div>
+        @if(Element.PluginDefinition is not null)
+        {
+            @foreach(var optionSource in Element.PluginDefinition.OptionSources)
+            {
+                <PluginOption @bind-Value="Element.Options[optionSource.FieldName]" Source="optionSource" />
+            }
+        }
+    </div>
+</div>
+
+@code {
+    [Parameter]
+    public PluginElement Element { get; set; }
+
+    private List<PluginDefinition> pluginDefinitions = [];
+
+    protected override async Task OnInitializedAsync()
+    {
+        pluginDefinitions = await pluginService.GetPluginDefinitionsAsync();
+
+        if (Element.PluginDefinitionId == 0)
+        {
+            Element.PluginDefinitionId = pluginDefinitions.FirstOrDefault()?.Id ?? 0;
+            Element.PluginDefinition = pluginDefinitions.FirstOrDefault();
+            foreach (var optionSource in Element.PluginDefinition?.OptionSources ?? [])
+            {
+                Element.Options.TryAdd(optionSource.FieldName, string.Empty);
+            }
+        }
+    }
+
+    private async Task Update()
+    {
+        Element.PluginDefinition = pluginDefinitions.FirstOrDefault(p => p.Id == Element.PluginDefinitionId) ?? pluginDefinitions.First();
+        Element.Options = [];
+        foreach(var optionSource in Element.PluginDefinition.OptionSources)
+        {
+            Element.Options.TryAdd(optionSource.FieldName, string.Empty);
+        }
+    }
+}

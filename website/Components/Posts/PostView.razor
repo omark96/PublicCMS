@@ -16,6 +16,17 @@
                 <img class="post-image" src="@Api.Value.ImageUrl(img.Guid.Value)" />
                 break;
             }
+        case PluginElement plugin:
+            {
+                <div>@plugin.PluginDefinition.Template</div>
+                <div>
+                    @foreach(var (optionKey, optionValue) in plugin.Options)
+                    {
+                        <div>@(optionKey): @(optionValue)</div>
+                    }
+                </div>
+                break;
+            }
     }
 }
 

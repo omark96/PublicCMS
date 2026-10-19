@@ -1,0 +1,118 @@
+﻿@page "/admin/plugins"
+@inject PluginService pluginService
+@rendermode InteractiveServer
+
+<h3>Plugins</h3>
+
+<div>
+    <label class="form-label">
+        Select plugin:
+        <select class="form-select" @bind="selectedPluginDefinitionId">
+            @foreach(var pluginDefinition in pluginDefinitions)
+            {
+                <option value="@pluginDefinition.Id">@pluginDefinition.Name</option>
+            }
+        </select>
+    </label>
+</div>
+<button @onclick="AddPluginDefinition">New plugin</button>
+
+<hr />
+
+@if(SelectedPluginDefinition is not null)
+{
+    <h4>@SelectedPluginDefinition.Name</h4>
+    <div>
+        <label class="form-label">
+            Name:
+            <input class="form-control" @bind="@SelectedPluginDefinition.Name"></input>
+        </label>
+    </div>
+    <div>
+        <label class="form-label">
+            Data endpoint:
+            <input class="form-control" @bind="@SelectedPluginDefinition.DataEndpoint"></input>
+        </label>
+    </div>
+    <div>
+        <label class="form-label">
+            Template:
+            <textarea class="form-control" @bind="@SelectedPluginDefinition.Template"></textarea>
+        </label>
+    </div>
+    <h5>Option sources:</h5>
+    <div class="border p-2">
+        @foreach(var source in SelectedPluginDefinition.OptionSources)
+        {
+            <div class="border mb-2 p-2">
+                <div>
+                    <label class="form-label">
+                        Name:
+                        <input class="form-control" @bind="@source.Name"></input>
+                    </label>
+                </div>
+                <div>
+                    <label class="form-label">
+                        Options endpoint:
+                        <input class="form-control" @bind="@source.EndPoint"></input>
+                    </label>
+                </div>
+                <div>
+                    <label class="form-label">
+                        Field name:
+                        <input class="form-control" @bind="@source.FieldName"></input>
+                    </label>
+                </div>
+                <div>
+                    <button class="btn btn-danger" @onclick="()=>RemoveSource(source)">Remove Source</button>
+                </div>
+            </div>
+        }
+    <button class="btn btn-primary" @onclick="AddSource">Add new source</button>
+    </div>
+    <div class="mt-2">
+        <button class="btn btn-primary" @onclick="Save">Save</button
+    </div>
+    
+}
+
+
+@code {
+    private List<PluginDefinition> pluginDefinitions = [];
+    private int selectedPluginDefinitionId;
+
+    private PluginDefinition? SelectedPluginDefinition => pluginDefinitions.FirstOrDefault(t => t.Id == selectedPluginDefinitionId);
+
+    protected override async Task OnInitializedAsync()
+    {
+        pluginDefinitions = await pluginService.GetPluginDefinitionsAsync();
+        selectedPluginDefinitionId = pluginDefinitions.FirstOrDefault()?.Id ?? 0;
+    }
+
+    public async Task AddPluginDefinition()
+    {
+        PluginDefinition newPlugin = await pluginService.CreatePluginDefinitionAsync("New plugin");
+        pluginDefinitions.Add(newPlugin);
+        selectedPluginDefinitionId = newPlugin.Id;
+    }
+
+    public void AddSource()
+    {
+        if(SelectedPluginDefinition is not null)
+        {
+            SelectedPluginDefinition.OptionSources.Add(new());
+        }
+    }
+    public void RemoveSource(OptionSource source)
+    {
+        if(SelectedPluginDefinition is not null)
+        {
+            SelectedPluginDefinition.OptionSources.Remove(source);
+        }
+    }
+
+    private async Task Save()
+    {
+        await pluginService.SavePluginDefinitionAsync(SelectedPluginDefinition);
+    }
+}

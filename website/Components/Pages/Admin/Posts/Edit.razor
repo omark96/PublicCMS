@@ -49,7 +49,10 @@
 				<ImageBlock Element="img"/>
 				break;
 			}
-		}
+            case PluginElement plugin:
+                <PluginBlock Element="plugin"/>
+                break;
+            }
         </div>
 		<div class="d-flex flex-column gap-1 flex-shrink-0">
 			<button class="btn btn-primary" @onclick="() => Move(i, i - 1)">↑</button>
@@ -62,6 +65,7 @@
 
 <input type="button" value="Add Paragraph" @onclick="AddParagraph" />
 <input type="button" value="Add Image" @onclick="AddImage" />
+<input type="button" value="Add Plugin" @onclick="AddPlugin" />
 } else
 {
 <PostView Post="Post"></PostView>
@@ -108,6 +112,11 @@
     public void AddImage()
     {
         Post.Elements.Add(new ImageElement());
+    }
+
+    public void AddPlugin()
+    {
+        Post.Elements.Add(new PluginElement());
     }
 
     public void RemoveElement(int index)
