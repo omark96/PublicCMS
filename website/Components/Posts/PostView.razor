@@ -18,13 +18,7 @@
             }
         case PluginElement plugin:
             {
-                <div>@plugin.PluginDefinition.Template</div>
-                <div>
-                    @foreach(var (optionKey, optionValue) in plugin.Options)
-                    {
-                        <div>@(optionKey): @(optionValue)</div>
-                    }
-                </div>
+                <PluginView Plugin="plugin" />
                 break;
             }
     }

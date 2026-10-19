@@ -312,11 +312,11 @@ namespace PublicCMS.Migrations
 
                     SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
 
-                    b.Property<string>("EndPoint")
+                    b.Property<string>("DisplayNameField")
                         .IsRequired()
                         .HasColumnType("nvarchar(max)");
 
-                    b.Property<string>("FieldName")
+                    b.Property<string>("EndPoint")
                         .IsRequired()
                         .HasColumnType("nvarchar(max)");
 
@@ -326,6 +326,10 @@ namespace PublicCMS.Migrations
 
                     b.Property<int?>("PluginDefinitionId")
                         .HasColumnType("int");
+
+                    b.Property<string>("ValueField")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
 
                     b.HasKey("Id");
 
@@ -441,6 +445,22 @@ namespace PublicCMS.Migrations
                         .HasColumnType("nvarchar(max)");
 
                     b.HasDiscriminator().HasValue("Paragraph");
+                });
+
+            modelBuilder.Entity("PublicCMS.Models.PageElements.PluginElement", b =>
+                {
+                    b.HasBaseType("PublicCMS.Models.PageElements.PostElement");
+
+                    b.Property<string>("Options")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<int>("PluginDefinitionId")
+                        .HasColumnType("int");
+
+                    b.HasIndex("PluginDefinitionId");
+
+                    b.HasDiscriminator().HasValue("Plugin");
                 });
 
             modelBuilder.Entity("Microsoft.AspNetCore.Identity.IdentityRoleClaim<string>", b =>
@@ -559,6 +579,17 @@ namespace PublicCMS.Migrations
                     b.HasOne("PublicCMS.Models.Plugins.PluginDefinition", null)
                         .WithMany("OptionSources")
                         .HasForeignKey("PluginDefinitionId");
+                });
+
+            modelBuilder.Entity("PublicCMS.Models.PageElements.PluginElement", b =>
+                {
+                    b.HasOne("PublicCMS.Models.Plugins.PluginDefinition", "PluginDefinition")
+                        .WithMany()
+                        .HasForeignKey("PluginDefinitionId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.Navigation("PluginDefinition");
                 });
 
             modelBuilder.Entity("PublicCMS.Models.Plugins.PluginDefinition", b =>

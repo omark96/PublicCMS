@@ -17,10 +17,14 @@
         {
             @foreach(var optionSource in Element.PluginDefinition.OptionSources)
             {
-                <PluginOption @bind-Value="Element.Options[optionSource.FieldName]" Source="optionSource" />
+                <PluginOption @bind-Value="Element.Options[optionSource.ValueField]" Source="optionSource" />
             }
         }
     </div>
+    @foreach(var (option, value) in Element.Options)
+    {
+        <div>@value</div>
+    }
 </div>
 
 @code {
@@ -39,7 +43,7 @@
             Element.PluginDefinition = pluginDefinitions.FirstOrDefault();
             foreach (var optionSource in Element.PluginDefinition?.OptionSources ?? [])
             {
-                Element.Options.TryAdd(optionSource.FieldName, string.Empty);
+                Element.Options.TryAdd(optionSource.ValueField, string.Empty);
             }
         }
     }
@@ -50,7 +54,7 @@
         Element.Options = [];
         foreach(var optionSource in Element.PluginDefinition.OptionSources)
         {
-            Element.Options.TryAdd(optionSource.FieldName, string.Empty);
+            Element.Options.TryAdd(optionSource.ValueField, string.Empty);
         }
     }
 }

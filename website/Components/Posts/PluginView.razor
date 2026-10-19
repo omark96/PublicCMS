@@ -1,0 +1,16 @@
+﻿@inject PluginService pluginService
+
+<div>@((MarkupString)HTML)</div>
+
+
+@code {
+    [Parameter]
+    public PluginElement Plugin { get; set; }
+
+    private string HTML;
+
+    protected override async Task OnInitializedAsync()
+    {
+        HTML = await pluginService.RenderPlugin(Plugin);
+    }
+}

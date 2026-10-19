@@ -12,8 +12,8 @@ using PublicCMS.Data;
 namespace PublicCMS.Migrations
 {
     [DbContext(typeof(ApplicationDbContext))]
-    [Migration("20261018155758_AddCssFieldToTheme")]
-    partial class AddCssFieldToTheme
+    [Migration("20261019222910_Init")]
+    partial class Init
     {
         /// <inheritdoc />
         protected override void BuildTargetModel(ModelBuilder modelBuilder)
@@ -307,6 +307,65 @@ namespace PublicCMS.Migrations
                     b.UseTphMappingStrategy();
                 });
 
+            modelBuilder.Entity("PublicCMS.Models.Plugins.OptionSource", b =>
+                {
+                    b.Property<int>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("int");
+
+                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
+
+                    b.Property<string>("DisplayNameField")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<string>("EndPoint")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<string>("Name")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<int?>("PluginDefinitionId")
+                        .HasColumnType("int");
+
+                    b.Property<string>("ValueField")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("PluginDefinitionId");
+
+                    b.ToTable("OptionSources", "website");
+                });
+
+            modelBuilder.Entity("PublicCMS.Models.Plugins.PluginDefinition", b =>
+                {
+                    b.Property<int>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("int");
+
+                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
+
+                    b.Property<string>("DataEndpoint")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<string>("Name")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<string>("Template")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
+
+                    b.HasKey("Id");
+
+                    b.ToTable("PluginDefinitions", "website");
+                });
+
             modelBuilder.Entity("PublicCMS.Models.Post", b =>
                 {
                     b.Property<int>("Id")
@@ -389,6 +448,22 @@ namespace PublicCMS.Migrations
                         .HasColumnType("nvarchar(max)");
 
                     b.HasDiscriminator().HasValue("Paragraph");
+                });
+
+            modelBuilder.Entity("PublicCMS.Models.PageElements.PluginElement", b =>
+                {
+                    b.HasBaseType("PublicCMS.Models.PageElements.PostElement");
+
+                    b.Property<string>("Options")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<int>("PluginDefinitionId")
+                        .HasColumnType("int");
+
+                    b.HasIndex("PluginDefinitionId");
+
+                    b.HasDiscriminator().HasValue("Plugin");
                 });
 
             modelBuilder.Entity("Microsoft.AspNetCore.Identity.IdentityRoleClaim<string>", b =>
@@ -500,6 +575,29 @@ namespace PublicCMS.Migrations
                         .HasForeignKey("PostId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
+                });
+
+            modelBuilder.Entity("PublicCMS.Models.Plugins.OptionSource", b =>
+                {
+                    b.HasOne("PublicCMS.Models.Plugins.PluginDefinition", null)
+                        .WithMany("OptionSources")
+                        .HasForeignKey("PluginDefinitionId");
+                });
+
+            modelBuilder.Entity("PublicCMS.Models.PageElements.PluginElement", b =>
+                {
+                    b.HasOne("PublicCMS.Models.Plugins.PluginDefinition", "PluginDefinition")
+                        .WithMany()
+                        .HasForeignKey("PluginDefinitionId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.Navigation("PluginDefinition");
+                });
+
+            modelBuilder.Entity("PublicCMS.Models.Plugins.PluginDefinition", b =>
+                {
+                    b.Navigation("OptionSources");
                 });
 
             modelBuilder.Entity("PublicCMS.Models.Post", b =>

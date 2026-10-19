@@ -56,6 +56,40 @@ namespace PublicCMS.Migrations
                 });
 
             migrationBuilder.CreateTable(
+                name: "NavMenuItems",
+                schema: "website",
+                columns: table => new
+                {
+                    Id = table.Column<int>(type: "int", nullable: false)
+                        .Annotation("SqlServer:Identity", "1, 1"),
+                    Link = table.Column<string>(type: "nvarchar(max)", nullable: false),
+                    Text = table.Column<string>(type: "nvarchar(max)", nullable: false),
+                    Icon = table.Column<string>(type: "nvarchar(max)", nullable: false),
+                    Visibility = table.Column<int>(type: "int", nullable: false),
+                    Order = table.Column<int>(type: "int", nullable: false)
+                },
+                constraints: table =>
+                {
+                    table.PrimaryKey("PK_NavMenuItems", x => x.Id);
+                });
+
+            migrationBuilder.CreateTable(
+                name: "PluginDefinitions",
+                schema: "website",
+                columns: table => new
+                {
+                    Id = table.Column<int>(type: "int", nullable: false)
+                        .Annotation("SqlServer:Identity", "1, 1"),
+                    Name = table.Column<string>(type: "nvarchar(max)", nullable: false),
+                    DataEndpoint = table.Column<string>(type: "nvarchar(max)", nullable: false),
+                    Template = table.Column<string>(type: "nvarchar(max)", nullable: false)
+                },
+                constraints: table =>
+                {
+                    table.PrimaryKey("PK_PluginDefinitions", x => x.Id);
+                });
+
+            migrationBuilder.CreateTable(
                 name: "Posts",
                 schema: "website",
                 columns: table => new
@@ -63,11 +97,32 @@ namespace PublicCMS.Migrations
                     Id = table.Column<int>(type: "int", nullable: false)
                         .Annotation("SqlServer:Identity", "1, 1"),
                     Title = table.Column<string>(type: "nvarchar(max)", nullable: false),
+                    FeaturedImageGuid = table.Column<Guid>(type: "uniqueidentifier", nullable: true),
                     CreatedAt = table.Column<DateTime>(type: "datetime2", nullable: false)
                 },
                 constraints: table =>
                 {
                     table.PrimaryKey("PK_Posts", x => x.Id);
+                });
+
+            migrationBuilder.CreateTable(
+                name: "Themes",
+                schema: "website",
+                columns: table => new
+                {
+                    Id = table.Column<int>(type: "int", nullable: false)
+                        .Annotation("SqlServer:Identity", "1, 1"),
+                    IsSelected = table.Column<bool>(type: "bit", nullable: false),
+                    Name = table.Column<string>(type: "nvarchar(max)", nullable: false),
+                    Css = table.Column<string>(type: "nvarchar(max)", nullable: false),
+                    HeaderCss = table.Column<string>(type: "nvarchar(max)", nullable: false),
+                    ImageCss = table.Column<string>(type: "nvarchar(max)", nullable: false),
+                    ParagraphCss = table.Column<string>(type: "nvarchar(max)", nullable: false),
+                    LinkCss = table.Column<string>(type: "nvarchar(max)", nullable: false)
+                },
+                constraints: table =>
+                {
+                    table.PrimaryKey("PK_Themes", x => x.Id);
                 });
 
             migrationBuilder.CreateTable(
@@ -209,6 +264,30 @@ namespace PublicCMS.Migrations
                 });
 
             migrationBuilder.CreateTable(
+                name: "OptionSources",
+                schema: "website",
+                columns: table => new
+                {
+                    Id = table.Column<int>(type: "int", nullable: false)
+                        .Annotation("SqlServer:Identity", "1, 1"),
+                    Name = table.Column<string>(type: "nvarchar(max)", nullable: false),
+                    EndPoint = table.Column<string>(type: "nvarchar(max)", nullable: false),
+                    ValueField = table.Column<string>(type: "nvarchar(max)", nullable: false),
+                    DisplayNameField = table.Column<string>(type: "nvarchar(max)", nullable: false),
+                    PluginDefinitionId = table.Column<int>(type: "int", nullable: true)
+                },
+                constraints: table =>
+                {
+                    table.PrimaryKey("PK_OptionSources", x => x.Id);
+                    table.ForeignKey(
+                        name: "FK_OptionSources_PluginDefinitions_PluginDefinitionId",
+                        column: x => x.PluginDefinitionId,
+                        principalSchema: "website",
+                        principalTable: "PluginDefinitions",
+                        principalColumn: "Id");
+                });
+
+            migrationBuilder.CreateTable(
                 name: "PageElements",
                 schema: "website",
                 columns: table => new
@@ -219,11 +298,20 @@ namespace PublicCMS.Migrations
                     Order = table.Column<int>(type: "int", nullable: false),
                     ElementType = table.Column<string>(type: "nvarchar(13)", maxLength: 13, nullable: false),
                     Guid = table.Column<Guid>(type: "uniqueidentifier", nullable: true),
-                    Content = table.Column<string>(type: "nvarchar(max)", nullable: true)
+                    Content = table.Column<string>(type: "nvarchar(max)", nullable: true),
+                    PluginDefinitionId = table.Column<int>(type: "int", nullable: true),
+                    Options = table.Column<string>(type: "nvarchar(max)", nullable: true)
                 },
                 constraints: table =>
                 {
                     table.PrimaryKey("PK_PageElements", x => x.Id);
+                    table.ForeignKey(
+                        name: "FK_PageElements_PluginDefinitions_PluginDefinitionId",
+                        column: x => x.PluginDefinitionId,
+                        principalSchema: "website",
+                        principalTable: "PluginDefinitions",
+                        principalColumn: "Id",
+                        onDelete: ReferentialAction.Cascade);
                     table.ForeignKey(
                         name: "FK_PageElements_Posts_PostId",
                         column: x => x.PostId,
@@ -286,6 +374,18 @@ namespace PublicCMS.Migrations
                 filter: "[NormalizedUserName] IS NOT NULL");
 
             migrationBuilder.CreateIndex(
+                name: "IX_OptionSources_PluginDefinitionId",
+                schema: "website",
+                table: "OptionSources",
+                column: "PluginDefinitionId");
+
+            migrationBuilder.CreateIndex(
+                name: "IX_PageElements_PluginDefinitionId",
+                schema: "website",
+                table: "PageElements",
+                column: "PluginDefinitionId");
+
+            migrationBuilder.CreateIndex(
                 name: "IX_PageElements_PostId",
                 schema: "website",
                 table: "PageElements",
@@ -320,7 +420,19 @@ namespace PublicCMS.Migrations
                 schema: "website");
 
             migrationBuilder.DropTable(
+                name: "NavMenuItems",
+                schema: "website");
+
+            migrationBuilder.DropTable(
+                name: "OptionSources",
+                schema: "website");
+
+            migrationBuilder.DropTable(
                 name: "PageElements",
+                schema: "website");
+
+            migrationBuilder.DropTable(
+                name: "Themes",
                 schema: "website");
 
             migrationBuilder.DropTable(
@@ -329,6 +441,10 @@ namespace PublicCMS.Migrations
 
             migrationBuilder.DropTable(
                 name: "AspNetUsers",
+                schema: "website");
+
+            migrationBuilder.DropTable(
+                name: "PluginDefinitions",
                 schema: "website");
 
             migrationBuilder.DropTable(

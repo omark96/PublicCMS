@@ -7,13 +7,13 @@
 <div>
     <label class="form-label">
         Select plugin:
+    </label>
         <select class="form-select" @bind="selectedPluginDefinitionId">
             @foreach(var pluginDefinition in pluginDefinitions)
             {
                 <option value="@pluginDefinition.Id">@pluginDefinition.Name</option>
             }
         </select>
-    </label>
 </div>
 <button @onclick="AddPluginDefinition">New plugin</button>
 
@@ -25,20 +25,20 @@
     <div>
         <label class="form-label">
             Name:
-            <input class="form-control" @bind="@SelectedPluginDefinition.Name"></input>
         </label>
+            <input class="form-control" @bind="@SelectedPluginDefinition.Name"></input>
     </div>
     <div>
         <label class="form-label">
             Data endpoint:
-            <input class="form-control" @bind="@SelectedPluginDefinition.DataEndpoint"></input>
         </label>
+            <input class="form-control" @bind="@SelectedPluginDefinition.DataEndpoint"></input>
     </div>
     <div>
         <label class="form-label">
             Template:
-            <textarea class="form-control" @bind="@SelectedPluginDefinition.Template"></textarea>
         </label>
+            <textarea class="form-control" @bind="@SelectedPluginDefinition.Template"></textarea>
     </div>
     <h5>Option sources:</h5>
     <div class="border p-2">
@@ -48,20 +48,26 @@
                 <div>
                     <label class="form-label">
                         Name:
-                        <input class="form-control" @bind="@source.Name"></input>
                     </label>
+                        <input class="form-control" @bind="@source.Name"></input>
                 </div>
                 <div>
                     <label class="form-label">
                         Options endpoint:
-                        <input class="form-control" @bind="@source.EndPoint"></input>
                     </label>
+                        <input class="form-control" @bind="@source.EndPoint"></input>
                 </div>
                 <div>
                     <label class="form-label">
-                        Field name:
-                        <input class="form-control" @bind="@source.FieldName"></input>
+                        Value field:
                     </label>
+                        <input class="form-control" @bind="@source.ValueField"></input>
+                </div>
+                <div>
+                    <label class="form-label">
+                        Display name field:
+                    </label>
+                        <input class="form-control" @bind="@source.DisplayNameField"></input>
                 </div>
                 <div>
                     <button class="btn btn-danger" @onclick="()=>RemoveSource(source)">Remove Source</button>

@@ -33,9 +33,9 @@ public class GalleriesController : ControllerBase
     }
 
     [HttpPost]
-    public async Task<IActionResult> Create(GalleryDto gallery)
+    public async Task<IActionResult> Create(CreateGalleryRequest request)
     {
-        var newGallery = await galleryService.CreateGalleryAsync(gallery.Name);
+        var newGallery = await galleryService.CreateGalleryAsync(request.Name);
 
         return Created($"api/galleries/{newGallery.Guid}", newGallery);
     }
