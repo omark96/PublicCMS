@@ -2,6 +2,7 @@
 using PublicCMS.Data;
 using PublicCMS.Models;
 using PublicCMS.Models.PageElements;
+using System.Text;
 
 namespace PublicCMS.Services;
 
@@ -50,9 +51,9 @@ public class PostService
             s => s.SetProperty(p => p.VisitorCount, p => p.VisitorCount + 1));
     }
 
-    private string GenerateSummary(Post post)
+    private string GenerateSummary(Post post, int summaryLength = 100)
     {
-        string summary = "";
+        StringBuilder summary = new();
         foreach (var element in post.Elements)
         {
             if (element is ParagraphElement paragraph)
@@ -71,19 +72,19 @@ public class PostService
                         default:
                             if (!inTag)
                             {
-                                summary += c;
+                                summary.Append(c);
                             }
                             break;
                     }
                 }
             }
-            summary += " ";
+            summary.Append(" ");
         }
-        if (summary.Length > 50)
+        if (summary.Length > summaryLength - 3)
         {
-            summary = summary.Substring(0, 50);
-            summary += "...";
+            summary.Length = summaryLength - 3;
+            summary.Append("...");
         }
-        return summary;
+        return summary.ToString(0, summaryLength);
     }
 }
