@@ -85,7 +85,12 @@ public class PluginService
         model["options"] = options;
 
         var dataUrl = Template.Parse(plugin.PluginDefinition.DataEndpoint).Render(model);
-        using var doc = JsonDocument.Parse(await client.GetStringAsync(dataUrl));
+        using var response = await client.GetAsync(dataUrl);
+        if (!response.IsSuccessStatusCode)
+        {
+            return """<p class="text-danger"> COULDN'T GET PLUGIN DATA </p>""";
+        }
+        var doc = JsonDocument.Parse(await response.Content.ReadAsStringAsync());
         model["data"] = ToScriban(doc.RootElement);
 
         var context = new TemplateContext { LoopLimit = 1000 };
