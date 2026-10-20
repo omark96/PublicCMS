@@ -33,11 +33,22 @@ public class GalleriesController : ControllerBase
     }
 
     [HttpPost]
-    public async Task<IActionResult> Create(CreateGalleryRequest request)
+    public async Task<IActionResult> CreateGallery(CreateGalleryRequest request)
     {
         var newGallery = await galleryService.CreateGalleryAsync(request.Name);
 
         return Created($"api/galleries/{newGallery.Guid}", newGallery);
+    }
+
+    [HttpPut("{galleryId:guid}")]
+    public async Task<IActionResult> UpdateGallery(Guid galleryId, CreateGalleryRequest request)
+    {
+        var gallery = await galleryService.UpdateGalleryAsync(galleryId, request.Name);
+
+        if (gallery is null)
+            return NotFound();
+
+        return Ok(gallery);
     }
 
     [HttpGet("{galleryId:guid}/images")]
@@ -60,4 +71,12 @@ public class GalleriesController : ControllerBase
         }
         return Ok(created);
     }
+
+    [HttpDelete("{guid:guid}")]
+    public async Task<ActionResult> RemoveGalleryAsync(Guid guid)
+    {
+        await galleryService.RemoveGalleryAsync(guid);
+        return Ok();
+    }
+
 }

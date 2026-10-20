@@ -117,4 +117,36 @@ public class GalleryService
     {
         return await context.Images.FirstOrDefaultAsync(i => i.Guid == imageId);
     }
+
+    internal async Task RemoveGalleryAsync(Guid galleryId)
+    {
+        Gallery? gallery = await context.Galleries.FirstOrDefaultAsync(g => g.Guid == galleryId);
+        if (gallery is not null)
+        {
+            context.Remove(gallery);
+            await context.SaveChangesAsync();
+        }
+    }
+
+    internal async Task<Gallery?> UpdateGalleryAsync(Guid galleryId, string name)
+    {
+        Gallery? gallery = await context.Galleries.FirstOrDefaultAsync(g => g.Guid == galleryId);
+        if (gallery is not null)
+        {
+            gallery.Name = name;
+            context.Update(gallery);
+            await context.SaveChangesAsync();
+        }
+        return gallery;
+    }
+
+    internal async Task RemoveImageAsync(Guid imageGuid)
+    {
+        GalleryImage? image = await context.Images.FirstOrDefaultAsync(i => i.Guid == imageGuid);
+        if (image is not null)
+        {
+            context.Remove(image);
+            await context.SaveChangesAsync();
+        }
+    }
 }

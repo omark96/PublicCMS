@@ -34,4 +34,11 @@ public class ImagesController : ControllerBase
         }
         return PhysicalFile(path, type);
     }
+
+    [HttpDelete("{guid:guid}")]
+    public async Task<ActionResult> RemoveImageAsync(Guid guid)
+    {
+        await galleryService.RemoveImageAsync(guid);
+        return Ok();
+    }
 }
