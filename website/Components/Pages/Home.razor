@@ -21,6 +21,7 @@
                     <div class="col-md-8">
                         <div class="card-body">
                             <h4 class="card-title">@post.Title</h4>
+                            <p class="text-body-secondary small">@post.CreatedAt.ToString("d MMM yyyy") · <span class="bi bi-eye"></span> @post.VisitorCount</p>
                             <p class="card-text">
                                 @post.Summary
                             </p>

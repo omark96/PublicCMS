@@ -1,7 +1,7 @@
 ﻿@inject IOptions<ApiSettings> Api
 
 <h1 class="post-header">@Post.Title</h1>
-<p class="text-body-secondary small mb-4">Published: @Post.CreatedAt.ToString("d MMM yyyy") · <span class="bi bi-eye"></span> @Post.VisitorCount</p>
+<p class="text-body-secondary small mb-4">@Post.CreatedAt.ToString("d MMM yyyy") · <span class="bi bi-eye"></span> @Post.VisitorCount</p>
 
 @foreach (var element in Post.Elements)
 {
