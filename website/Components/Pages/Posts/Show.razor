@@ -14,10 +14,24 @@
     [Parameter]
     public int? Id { get; set; }
 
-    public Post? Post { get; set; }
+    private Post? Post;
+
+    private int currentId;
 
     protected override async Task OnParametersSetAsync()
     {
-        Post = await postService.GetPostAsync(Id!.Value);
+        if(Id is not null)
+        {
+            Post = await postService.GetPostAsync(Id.Value);
+        }
+    }
+
+    protected override async Task OnAfterRenderAsync(bool firstRender)
+    {
+        if (Post is not null && currentId != Post.Id)
+        {
+            currentId = Post.Id;
+            await postService.IncrementVisitorCountAsync(Post.Id);
+        }
     }
 }

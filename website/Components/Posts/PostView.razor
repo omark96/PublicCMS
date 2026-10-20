@@ -1,6 +1,7 @@
 ﻿@inject IOptions<ApiSettings> Api
 
 <h1 class="post-header">@Post.Title</h1>
+<p>Visitor count: @Post.VisitorCount</p>
 
 @foreach (var element in Post.Elements)
 {

@@ -31,6 +31,7 @@ public class PostService
     {
         return await context.Posts
             .Include(p => p.Elements)
+            .AsNoTracking()
             .FirstOrDefaultAsync(p => p.Id == id);
     }
 
@@ -39,6 +40,14 @@ public class PostService
         post.Summary = GenerateSummary(post);
         context.Posts.Update(post);
         await context.SaveChangesAsync();
+    }
+
+    public async Task IncrementVisitorCountAsync(int postId)
+    {
+        await context.Posts
+            .Where(p => p.Id == postId)
+            .ExecuteUpdateAsync(
+            s => s.SetProperty(p => p.VisitorCount, p => p.VisitorCount + 1));
     }
 
     private string GenerateSummary(Post post)
