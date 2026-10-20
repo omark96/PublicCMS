@@ -9,17 +9,23 @@
 @attribute [Authorize(Roles = "Admin")]
 
 <h3>@(IsEdit ? "Edit post" : "Create a new post")</h3>
+<ul class="nav nav-tabs mb-2">
+    <li class="nav-item">
+	    <button class="nav-link @(editting ? "" : "active")" @onclick="()=>{editting = false;}">Preview</button
+    </li>
+    <li class="nav-item">
+	    <button class="nav-link @(editting ? "active" : "")" @onclick="()=>{editting = true;}">Edit</button>
+    </li>
+</ul>
 <div>
-	<button @onclick="()=>{editting = false;}">Preview</button>
-	<button @onclick="()=>{editting = true;}">Edit</button>
 </div>
 @if(editting) {
-<div>
-	<label>Title:</label>
-	<input @bind-value="Post.Title" />
+<div class="mb-4">
+	<label class="form-label">Title:</label>
+	<input class="form-control" @bind-value="Post.Title" />
 </div>
 <div>
-    <h2>Featured image:</h2>
+    <h5>Featured image:</h5>
         @if(Post.FeaturedImageGuid is Guid imageGuid)
         {
             <img src="@Api.Value.ImageUrl(imageGuid)" class="col-12" />
@@ -28,11 +34,12 @@
 		    @bind-Show="showImageModal"
 		    OnSelected="img => Post.FeaturedImageGuid = img.Guid"
 		/>
-    <button type="button" class="btn btn-primary" @onclick="() => showImageModal = true">
+    <button type="button" class="btn btn-outline-primary" @onclick="() => showImageModal = true">
 	    Select image
     </button>
 </div>
-<div class="post-elements">
+<hr />
+<div class="post-elements d-flex flex-column mb-4 gap-3">
 @foreach(var (element, i) in Post.Elements.Select((item, index) => (item, index)))
 {
 	<div class="d-flex gap-2 border p-2" @key="element">
@@ -54,24 +61,26 @@
                 break;
             }
         </div>
-		<div class="d-flex flex-column gap-1 flex-shrink-0">
-			<button class="btn btn-primary" @onclick="() => Move(i, i - 1)">↑</button>
-			<button class="btn btn-primary" @onclick="() => Move(i, i + 1)">↓</button>
-			<button class="btn btn-primary" @onclick="() => RemoveElement(i)">X</button>
-		</div>
+        <div class="d-flex flex-column justify-content-center">
+		    <div class="btn-group-vertical">
+			    <button class="btn btn-outline-primary" @onclick="() => Move(i, i - 1)">↑</button>
+			    <button class="btn btn-outline-primary" @onclick="() => Move(i, i + 1)">↓</button>
+			    <button class="btn btn-outline-danger" @onclick="() => RemoveElement(i)">X</button>
+		    </div>
+        </div>
 	</div>
 }
 </div>
 
-<input type="button" value="Add Paragraph" @onclick="AddParagraph" />
-<input type="button" value="Add Image" @onclick="AddImage" />
-<input type="button" value="Add Plugin" @onclick="AddPlugin" />
+<input class="btn btn-outline-primary" type="button" value="Add Paragraph" @onclick="AddParagraph" />
+<input class="btn btn-outline-primary" type="button" value="Add Image" @onclick="AddImage" />
+<input class="btn btn-outline-primary" type="button" value="Add Plugin" @onclick="AddPlugin" />
 } else
 {
 <PostView Post="Post"></PostView>
 }
-<div>
-	<button @onclick="Submit">Save</button>
+<div class="d-flex justify-content-end mt-4 pb-5">
+	<button class="btn btn-primary" @onclick="Submit">Save Post</button>
 </div>
 
 @code {

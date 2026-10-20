@@ -1,6 +1,6 @@
 ﻿@inject PluginService pluginService
 
-<h3>PluginBlock</h3>
+<h5>PluginBlock</h5>
 
 <div>
     <label class="form-label">
@@ -21,10 +21,6 @@
             }
         }
     </div>
-    @foreach(var (option, value) in Element.Options)
-    {
-        <div>@value</div>
-    }
 </div>
 
 @code {

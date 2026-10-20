@@ -4,19 +4,18 @@
 
 <h3>Plugins</h3>
 
-<div>
+<div class="mb-2">
     <label class="form-label">
         Select plugin:
     </label>
-        <select class="form-select" @bind="selectedPluginDefinitionId">
-            @foreach(var pluginDefinition in pluginDefinitions)
-            {
-                <option value="@pluginDefinition.Id">@pluginDefinition.Name</option>
-            }
-        </select>
+    <select class="form-select" @bind="selectedPluginDefinitionId">
+        @foreach(var pluginDefinition in pluginDefinitions)
+        {
+            <option value="@pluginDefinition.Id">@pluginDefinition.Name</option>
+        }
+    </select>
 </div>
-<button @onclick="AddPluginDefinition">New plugin</button>
-
+<button class="btn btn-primary" @onclick="AddPluginDefinition">New plugin</button>
 <hr />
 
 @if(SelectedPluginDefinition is not null)
@@ -26,58 +25,58 @@
         <label class="form-label">
             Name:
         </label>
-            <input class="form-control" @bind="@SelectedPluginDefinition.Name"></input>
+        <input class="form-control" @bind="@SelectedPluginDefinition.Name"></input>
     </div>
     <div>
         <label class="form-label">
             Data endpoint:
         </label>
-            <input class="form-control" @bind="@SelectedPluginDefinition.DataEndpoint"></input>
+        <input class="form-control" @bind="@SelectedPluginDefinition.DataEndpoint"></input>
     </div>
     <div>
         <label class="form-label">
             Template:
         </label>
-            <textarea class="form-control" @bind="@SelectedPluginDefinition.Template"></textarea>
+        <textarea class="form-control" rows="8" @bind="@SelectedPluginDefinition.Template"></textarea>
     </div>
     <h5>Option sources:</h5>
     <div class="border p-2">
         @foreach(var source in SelectedPluginDefinition.OptionSources)
         {
-            <div class="border mb-2 p-2">
+            <div class="d-flex flex-column border mb-2 p-2 gap-3">
                 <div>
                     <label class="form-label">
                         Name:
                     </label>
-                        <input class="form-control" @bind="@source.Name"></input>
+                    <input class="form-control" @bind="@source.Name"></input>
                 </div>
                 <div>
                     <label class="form-label">
                         Options endpoint:
                     </label>
-                        <input class="form-control" @bind="@source.EndPoint"></input>
+                    <input class="form-control" @bind="@source.EndPoint"></input>
                 </div>
                 <div>
                     <label class="form-label">
                         Value field:
                     </label>
-                        <input class="form-control" @bind="@source.ValueField"></input>
+                    <input class="form-control" @bind="@source.ValueField"></input>
                 </div>
                 <div>
                     <label class="form-label">
                         Display name field:
                     </label>
-                        <input class="form-control" @bind="@source.DisplayNameField"></input>
+                    <input class="form-control" @bind="@source.DisplayNameField"></input>
                 </div>
                 <div>
-                    <button class="btn btn-danger" @onclick="()=>RemoveSource(source)">Remove Source</button>
+                    <button class="btn btn-outline-danger" @onclick="()=>RemoveSource(source)">Remove Source</button>
                 </div>
             </div>
         }
-    <button class="btn btn-primary" @onclick="AddSource">Add new source</button>
+        <button class="btn btn-outline-primary" @onclick="AddSource">Add new source</button>
     </div>
-    <div class="mt-2">
-        <button class="btn btn-primary" @onclick="Save">Save</button
+    <div class="d-flex justify-content-end mt-2">
+    <button class="btn btn-primary" @onclick="Save">Save</button>
     </div>
     
 }

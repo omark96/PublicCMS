@@ -17,30 +17,30 @@ public class Theme
         return new()
         {
             HeaderCss = """
-                font-size: 2rem;
-                font-weight: 700;
-                line-height: 1.2;
-                margin: 0 0 1rem;
+            font-size: 2rem;
+            font-weight: 700;
+            line-height: 1.2;
+            margin: 0 0 1rem;
             """,
             ImageCss = """
-                display: block;
-                max-width: 100%;
-                height: auto;
-                margin: 1.5rem 0;
-                border-radius: 4px;
+            display: block;
+            max-width: 100%;
+            height: auto;
+            margin: 1.5rem 0;
+            border-radius: 4px;
             """,
             ParagraphCss = """
-                font-size: 1rem;
-                line-height: 1.6;
-                margin: 0 0 1rem;
+            font-size: 1rem;
+            line-height: 1.6;
+            margin: 0 0 1rem;
             """,
             LinkCss = """
-                color: #0066cc;
-                text-decoration: underline;
-                text-underline-offset: 2px;
-                    &:hover {
-                        color: #004499;
-                    }
+            color: #0066cc;
+            text-decoration: underline;
+            text-underline-offset: 2px;
+                &:hover {
+                    color: #004499;
+                }
             """
         };
     }

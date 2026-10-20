@@ -1,7 +1,7 @@
 ﻿<div class="row row-cols-2" >
     @foreach (var image in Images)
     {
-        <img class="img-fluid" 
+        <img class="img-fluid @(image.Guid == SelectedImage?.Guid ? "border border-primary" : "") "
         style="max-height: 150px; object-fit:contain;" 
         src="https://localhost:7272/api/images/@image.Guid" 
         @onclick="() => SelectedImage = image"

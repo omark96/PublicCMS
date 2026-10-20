@@ -8,27 +8,29 @@
 
 @foreach(var post in Posts)
 {
-    <a href="/posts/@post.Id">
-        <section class="card card-row" style="max-width: 1000px">
-            <div class="row g-0">
-                <div class="col-md-4">
-                    @if (post.FeaturedImageGuid is Guid imageGuid)
-                    {
-                        <img src="@Api.Value.ImageUrl(imageGuid)" class="img-fluid rounded-start" style="height: 100%; object-fit: cover;"/>
-                    }
-                </div>
-                <div class="col-md-8">
-                    <div class="card-body">
-                        <h4 class="card-title">@post.Title</h4>
-                        <p class="card-text">
-                            - Insert Post Summary here -
-                            I needed some more text just to fill it out, so here it goes... It is getting longer and longer and longer. How long can it get?
-                        </p>
+    <div class="mb-4">
+        <a class="text-decoration-none" href="/posts/@post.Id">
+            <section class="card card-row" style="max-width: 1000px">
+                <div class="row g-0">
+                    <div class="col-md-4">
+                        @if (post.FeaturedImageGuid is Guid imageGuid)
+                        {
+                            <img src="@Api.Value.ImageUrl(imageGuid)" class="img-fluid rounded-start" style="height: 100%; object-fit: cover;"/>
+                        }
+                    </div>
+                    <div class="col-md-8">
+                        <div class="card-body">
+                            <h4 class="card-title">@post.Title</h4>
+                            <p class="card-text">
+                                - Insert Post Summary here -
+                                I needed some more text just to fill it out, so here it goes... It is getting longer and longer and longer. How long can it get?
+                            </p>
+                        </div>
                     </div>
                 </div>
-            </div>
-        </section>
-    </a>
+            </section>
+        </a>
+    </div>
 }
 
 @code {
