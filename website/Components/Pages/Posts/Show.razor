@@ -1,4 +1,6 @@
 ﻿@page "/posts/{Id:int}"
+@page "/pages/{Slug}"
+@using PublicCMS.Utils
 @rendermode InteractiveServer
 @inject PostService postService
 
@@ -13,6 +15,8 @@
 @code {
     [Parameter]
     public int? Id { get; set; }
+    [Parameter]
+    public string? Slug { get; set; }
 
     private Post? Post;
 
@@ -23,6 +27,10 @@
         if(Id is not null)
         {
             Post = await postService.GetPostAsync(Id.Value);
+        }
+        if(Slug is not null)
+        {
+            Post = await postService.GetPostBySlugAsync(Slug);
         }
     }
 

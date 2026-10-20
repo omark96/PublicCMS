@@ -11,7 +11,7 @@
 <h3>@(IsEdit ? "Edit post" : "Create a new post")</h3>
 <ul class="nav nav-tabs mb-2">
     <li class="nav-item">
-	    <button class="nav-link @(editting ? "" : "active")" @onclick="()=>{editting = false;}">Preview</button
+	    <button class="nav-link @(editting ? "" : "active")" @onclick="()=>{editting = false;}">Preview</button>
     </li>
     <li class="nav-item">
 	    <button class="nav-link @(editting ? "active" : "")" @onclick="()=>{editting = true;}">Edit</button>
@@ -23,6 +23,10 @@
 <div class="mb-4">
 	<label class="form-label">Title:</label>
 	<input class="form-control" @bind-value="Post.Title" />
+    @if (invalidSlug)
+    {
+        <span class="text-danger">Need a unique slug generated from title</span>
+    }
 </div>
 <div>
     <h5>Featured image:</h5>
@@ -92,6 +96,7 @@
     private bool IsEdit => Id is not null;
     private bool editting = true;
     private bool showImageModal;
+    private bool invalidSlug;
 
     protected override async Task OnParametersSetAsync()
     {
@@ -103,6 +108,11 @@
 
     private async Task Submit()
     {
+        if (!await postService.PostHasValidSlug(Post))
+        {
+            invalidSlug = true;
+            return;
+        }
         if (IsEdit)
         {
             await postService.UpdatePostAsync(Post);

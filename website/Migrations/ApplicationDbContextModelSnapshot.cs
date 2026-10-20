@@ -377,6 +377,10 @@ namespace PublicCMS.Migrations
                     b.Property<Guid?>("FeaturedImageGuid")
                         .HasColumnType("uniqueidentifier");
 
+                    b.Property<string>("Slug")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(450)");
+
                     b.Property<string>("Summary")
                         .IsRequired()
                         .HasColumnType("nvarchar(max)");
@@ -389,6 +393,9 @@ namespace PublicCMS.Migrations
                         .HasColumnType("int");
 
                     b.HasKey("Id");
+
+                    b.HasIndex("Slug")
+                        .IsUnique();
 
                     b.ToTable("Posts", "website");
                 });

@@ -24,6 +24,10 @@ public class ApplicationDbContext(DbContextOptions<ApplicationDbContext> options
 
         builder.HasDefaultSchema("website");
 
+        builder.Entity<Post>()
+            .HasIndex(p => p.Slug)
+            .IsUnique();
+
         builder.Entity<PostElement>()
             .HasDiscriminator<string>("ElementType")
             .HasValue<ParagraphElement>("Paragraph")
