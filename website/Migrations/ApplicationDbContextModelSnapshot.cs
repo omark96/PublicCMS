@@ -377,6 +377,10 @@ namespace PublicCMS.Migrations
                     b.Property<Guid?>("FeaturedImageGuid")
                         .HasColumnType("uniqueidentifier");
 
+                    b.Property<string>("Summary")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
+
                     b.Property<string>("Title")
                         .IsRequired()
                         .HasColumnType("nvarchar(max)");

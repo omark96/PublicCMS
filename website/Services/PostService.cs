@@ -1,6 +1,7 @@
 ﻿using Microsoft.EntityFrameworkCore;
 using PublicCMS.Data;
 using PublicCMS.Models;
+using PublicCMS.Models.PageElements;
 
 namespace PublicCMS.Services;
 
@@ -21,6 +22,7 @@ public class PostService
     public async Task CreatePostAsync(Post post)
     {
         post.CreatedAt = DateTime.UtcNow;
+        post.Summary = GenerateSummary(post);
         context.Posts.Add(post);
         await context.SaveChangesAsync();
     }
@@ -34,7 +36,45 @@ public class PostService
 
     public async Task UpdatePostAsync(Post post)
     {
+        post.Summary = GenerateSummary(post);
         context.Posts.Update(post);
         await context.SaveChangesAsync();
+    }
+
+    private string GenerateSummary(Post post)
+    {
+        string summary = "";
+        foreach (var element in post.Elements)
+        {
+            if (element is ParagraphElement paragraph)
+            {
+                bool inTag = false;
+                foreach (var c in paragraph.Content)
+                {
+                    switch (c)
+                    {
+                        case '<':
+                            inTag = true;
+                            break;
+                        case '>':
+                            inTag = false;
+                            break;
+                        default:
+                            if (!inTag)
+                            {
+                                summary += c;
+                            }
+                            break;
+                    }
+                }
+            }
+            summary += " ";
+        }
+        if (summary.Length > 50)
+        {
+            summary = summary.Substring(0, 50);
+            summary += "...";
+        }
+        return summary;
     }
 }

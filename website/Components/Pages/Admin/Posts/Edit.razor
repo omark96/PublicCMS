@@ -28,7 +28,7 @@
     <h5>Featured image:</h5>
         @if(Post.FeaturedImageGuid is Guid imageGuid)
         {
-            <img src="@Api.Value.ImageUrl(imageGuid)" class="col-12" />
+            <img src="@Api.Value.ImageUrl(imageGuid)" class="col-12" style="max-height: 400px; object-fit: contain;" />
         }
         <ImagePickerModal 
 		    @bind-Show="showImageModal"
