@@ -11,12 +11,12 @@ namespace PublicCMS.Services;
 public class PluginService
 {
     private readonly IHttpClientFactory httpClientFactory;
-    private readonly ApplicationDbContext context;
+    private readonly IDbContextFactory<ApplicationDbContext> contextFactory;
 
-    public PluginService(IHttpClientFactory httpClientFactory, ApplicationDbContext context)
+    public PluginService(IHttpClientFactory httpClientFactory, IDbContextFactory<ApplicationDbContext> contextFactory)
     {
         this.httpClientFactory = httpClientFactory;
-        this.context = context;
+        this.contextFactory = contextFactory;
     }
     public async Task<List<PluginOptionDto>> GetOptionsAsync(OptionSource source)
     {
@@ -41,6 +41,7 @@ public class PluginService
 
     public async Task<PluginDefinition> CreatePluginDefinitionAsync(string pluginName)
     {
+        var context = await contextFactory.CreateDbContextAsync();
         PluginDefinition newPlugin = new()
         {
             Name = pluginName
@@ -55,6 +56,7 @@ public class PluginService
 
     public async Task<List<PluginDefinition>> GetPluginDefinitionsAsync()
     {
+        var context = await contextFactory.CreateDbContextAsync();
         return await context.PluginDefinitions
             .Include(p => p.OptionSources)
             .ToListAsync();
@@ -62,6 +64,7 @@ public class PluginService
 
     public async Task SavePluginDefinitionAsync(PluginDefinition plugin)
     {
+        var context = await contextFactory.CreateDbContextAsync();
         context.Update(plugin);
         await context.SaveChangesAsync();
     }
