@@ -54,6 +54,14 @@ public class PluginService
         return newPlugin;
     }
 
+    public async Task RemovePluginDefinitionAsync(PluginDefinition plugin)
+    {
+        var context = await contextFactory.CreateDbContextAsync();
+        await context.PluginDefinitions
+            .Where(p => p.Id == plugin.Id)
+            .ExecuteDeleteAsync();
+    }
+
     public async Task<List<PluginDefinition>> GetPluginDefinitionsAsync()
     {
         var context = await contextFactory.CreateDbContextAsync();

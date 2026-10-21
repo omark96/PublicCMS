@@ -78,6 +78,7 @@
         <button class="btn btn-outline-primary" @onclick="AddSource">Add new source</button>
     </div>
     <div class="d-flex justify-content-end mt-2">
+    <button class="btn btn-danger" @onclick="()=>RemovePluginDefinition(SelectedPluginDefinition)">Delete</button>
     <button class="btn btn-primary" @onclick="Save">Save</button>
     </div>
     
@@ -103,6 +104,17 @@
         selectedPluginDefinitionId = newPlugin.Id;
     }
 
+    public async Task RemovePluginDefinition(PluginDefinition plugin)
+    {
+        if (!await JS.InvokeAsync<bool>("confirm", "Are you sure you want to delete this?"))
+        {
+            return; 
+        }
+        await pluginService.RemovePluginDefinitionAsync(plugin);
+        pluginDefinitions.Remove(plugin);
+        selectedPluginDefinitionId = pluginDefinitions.FirstOrDefault()?.Id ?? 0;
+    }
+
     public void AddSource()
     {
         if(SelectedPluginDefinition is not null)
@@ -114,10 +126,6 @@
     {
         if(SelectedPluginDefinition is not null)
         {
-            if (!await JS.InvokeAsync<bool>("confirm", "Are you sure you want to delete this?"))
-            {
-                return; 
-            }
             SelectedPluginDefinition.OptionSources.Remove(source);
         }
     }
