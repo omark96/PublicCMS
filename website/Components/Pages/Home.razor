@@ -10,12 +10,12 @@
 {
     <div class="mb-4">
         <a class="text-decoration-none" href="/pages/@post.Slug">
-            <section class="card card-row" style="max-width: 1000px; max-height: 200px; overflow: hidden">
+            <section class="card card-row overflow-hidden">
                 <div class="row g-0">
                     <div class="col-md-4" >
                         @if (post.FeaturedImageGuid is Guid imageGuid)
                         {
-                            <img src="@Api.Value.ImageUrl(imageGuid)" class="img-fluid rounded-start" style="height: 100%; object-fit: cover;"/>
+                            <img src="@Api.Value.ImageUrl(imageGuid)" class="img-fluid" style="height: 100%; object-fit: cover;"/>
                         }
                     </div>
                     <div class="col-md-8">
