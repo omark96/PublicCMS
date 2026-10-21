@@ -3,6 +3,8 @@
 @inject SiteSectionService siteSectionService
 @inject NavigationManager navigationManager
 @rendermode InteractiveServer
+@inject IJSRuntime JS
+
 @attribute [Authorize(Roles = "Admin")]
 
 <h3>Site sections</h3>
@@ -83,6 +85,11 @@
         if(SelectedSiteSection is null)
         {
             return;
+        }
+
+        if (!await JS.InvokeAsync<bool>("confirm", "Are you sure you want to delete this?"))
+        {
+            return; 
         }
 
         await siteSectionService.RemoveSiteSectionAsync(SelectedSiteSection);

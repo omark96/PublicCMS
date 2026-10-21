@@ -1,6 +1,9 @@
 ﻿@page "/admin/galleries/{Guid:guid}/edit"
 @rendermode InteractiveServer
+@inject IJSRuntime JS
 @inject GalleryService galleryService
+
+@attribute [Authorize(Roles = "Admin")]
 
 <h3>Edit</h3>
 
@@ -62,11 +65,18 @@
 
     private async Task UpdateGallery()
     {
-        gallery = await galleryService.UpdateGalleryAsync(gallery);
+        if(gallery is not null)
+        {
+            gallery = await galleryService.UpdateGalleryAsync(gallery);
+        }
     }
 
     private async Task RemoveImage(GalleryImage image)
     {
+        if (!await JS.InvokeAsync<bool>("confirm", "Are you sure you want to delete this?"))
+        {
+            return;
+        }
         await galleryService.RemoveImageAsync(image.Guid);
         gallery = await galleryService.GetGalleryAsync(Guid);
     }
