@@ -2,14 +2,14 @@
 
 <label class="form-label">
     @Source.Name:
-    <select class="form-select" @bind:get="Value" @bind:set="OnValueChanged">
-        <option value="">-- Select --</option>
-        @foreach(var option in Source.Options)
-        {
-            <option value="@option.Value">@option.DisplayName</option>
-        }
-    </select>
 </label>
+<select class="form-select" @bind:get="Value" @bind:set="OnValueChanged">
+    <option value="">-- Select --</option>
+    @foreach(var option in Source.Options)
+    {
+        <option value="@option.Value">@option.DisplayName</option>
+    }
+</select>
 
 @code {
     [Parameter]

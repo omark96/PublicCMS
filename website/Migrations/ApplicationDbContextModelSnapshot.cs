@@ -467,6 +467,17 @@ namespace PublicCMS.Migrations
                     b.ToTable("Themes", "website");
                 });
 
+            modelBuilder.Entity("PublicCMS.Models.PageElements.HtmlElement", b =>
+                {
+                    b.HasBaseType("PublicCMS.Models.PageElements.PostElement");
+
+                    b.Property<string>("Html")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
+
+                    b.HasDiscriminator().HasValue("Html");
+                });
+
             modelBuilder.Entity("PublicCMS.Models.PageElements.ImageElement", b =>
                 {
                     b.HasBaseType("PublicCMS.Models.PageElements.PostElement");

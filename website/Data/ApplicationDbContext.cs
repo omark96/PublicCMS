@@ -37,7 +37,8 @@ public class ApplicationDbContext(DbContextOptions<ApplicationDbContext> options
             .HasDiscriminator<string>("ElementType")
             .HasValue<ParagraphElement>("Paragraph")
             .HasValue<ImageElement>("Image")
-            .HasValue<PluginElement>("Plugin");
+            .HasValue<PluginElement>("Plugin")
+            .HasValue<HtmlElement>("Html");
 
         builder.Entity<PluginElement>()
             .Property(p => p.Options)

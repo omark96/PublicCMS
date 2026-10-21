@@ -2,6 +2,11 @@
 @inject IOptions<ApiSettings> Api
 
 <div>
+	<div>
+		<label class="form-label">
+			Image
+		</label>
+	</div>
 	@if (Element.Guid is not null)
 	{
 		<img src="@Api.Value.ImageUrl(Element.Guid.Value)" class="col-12" />

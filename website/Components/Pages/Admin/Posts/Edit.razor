@@ -65,9 +65,17 @@
 				break;
 			}
             case PluginElement plugin:
+                {
                 <PluginBlock Element="plugin"/>
                 break;
+                                
+                }
+            case HtmlElement html:
+            {
+                <HtmlBlock Element="html"/>
+                break;
             }
+        }
         </div>
         <div class="d-flex flex-column justify-content-center">
 		    <div class="btn-group-vertical">
@@ -83,6 +91,7 @@
 <input class="btn btn-outline-primary" type="button" value="Add Paragraph" @onclick="AddParagraph" />
 <input class="btn btn-outline-primary" type="button" value="Add Image" @onclick="AddImage" />
 <input class="btn btn-outline-primary" type="button" value="Add Plugin" @onclick="AddPlugin" />
+<input class="btn btn-outline-primary" type="button" value="Add Html" @onclick="AddHtml" />
 } else
 {
 <PostView Post="Post"></PostView>
@@ -140,6 +149,11 @@
     public void AddPlugin()
     {
         Post.Elements.Add(new PluginElement());
+    }
+
+    public void AddHtml()
+    {
+        Post.Elements.Add(new HtmlElement());
     }
 
     public void RemoveElement(int index)

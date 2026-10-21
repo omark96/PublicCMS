@@ -22,6 +22,11 @@
                 <PluginView Plugin="plugin" />
                 break;
             }
+        case HtmlElement html:
+            {
+                <div>@((MarkupString)html.Html)</div>
+                break;
+            }
     }
 }
 

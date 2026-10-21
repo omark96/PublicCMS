@@ -1,0 +1,11 @@
+﻿<div>
+    <label class="form-label">
+        Html
+    </label>
+    <textarea class="form-control" rows="8" @bind="@Element.Html"></textarea>
+</div>
+
+@code {
+    [Parameter]
+	required public HtmlElement Element { get; set; }
+}

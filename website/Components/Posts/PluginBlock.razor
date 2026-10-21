@@ -1,17 +1,20 @@
 ﻿@inject PluginService pluginService
 
-<h5>PluginBlock</h5>
-
 <div>
+    <div>
+        <label class="form-label">
+            Plugin
+        </label>
+    </div>
     <label class="form-label">
         Select plugin:
-        <select class="form-select" @bind="Element.PluginDefinitionId" @bind:after="Update">
-            @foreach(var pluginDefinition in pluginDefinitions)
-            {
-                <option value="@pluginDefinition.Id">@pluginDefinition.Name</option>
-            }
-        </select>
     </label>
+    <select class="form-select" @bind="Element.PluginDefinitionId" @bind:after="Update">
+        @foreach(var pluginDefinition in pluginDefinitions)
+        {
+            <option value="@pluginDefinition.Id">@pluginDefinition.Name</option>
+        }
+    </select>
     <div>
         @if(Element.PluginDefinition is not null)
         {
