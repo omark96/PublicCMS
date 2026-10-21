@@ -40,6 +40,15 @@ public class PostService
         await context.SaveChangesAsync();
     }
 
+    public async Task RemovePostAsync(Post post)
+    {
+        await using var context = await ContextFactory.CreateDbContextAsync();
+        await context.Posts
+            .Where(p => p.Id == post.Id)
+            .ExecuteDeleteAsync();
+
+    }
+
     public async Task<bool> PostHasValidSlug(Post post)
     {
         await using var context = await ContextFactory.CreateDbContextAsync();
