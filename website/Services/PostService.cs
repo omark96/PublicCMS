@@ -52,7 +52,7 @@ public class PostService
     {
         await using var context = await ContextFactory.CreateDbContextAsync();
         return await context.Posts
-            .Include(p => p.Elements)
+            .Include(p => p.Elements.OrderBy(e => e.Order))
             .AsNoTracking()
             .FirstOrDefaultAsync(p => p.Id == id);
     }
@@ -60,7 +60,7 @@ public class PostService
     {
         await using var context = await ContextFactory.CreateDbContextAsync();
         return await context.Posts
-            .Include(p => p.Elements)
+            .Include(p => p.Elements.OrderBy(e => e.Order))
             .AsNoTracking()
             .FirstOrDefaultAsync(p => p.Slug == slug);
     }

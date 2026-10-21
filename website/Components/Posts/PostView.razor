@@ -1,5 +1,12 @@
 ﻿@inject IOptions<ApiSettings> Api
 
+@if (!string.IsNullOrWhiteSpace(Post.Css))
+{
+    <HeadContent>
+        <style>@((MarkupString)Post.Css)</style>
+    </HeadContent>
+}
+
 <h1 class="post-header">@Post.Title</h1>
 <p class="text-body-secondary small mb-4">@Post.CreatedAt.ToString("d MMM yyyy") · <span class="bi bi-eye"></span> @Post.VisitorCount</p>
 
@@ -24,7 +31,7 @@
             }
         case HtmlElement html:
             {
-                <div>@((MarkupString)html.Html)</div>
+                <div class="overflow-x-auto">@((MarkupString)html.Html)</div>
                 break;
             }
     }

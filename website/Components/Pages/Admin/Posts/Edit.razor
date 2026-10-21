@@ -46,6 +46,13 @@
 	    Select image
     </button>
 </div>
+
+<div>
+    <label class="form-label">
+        Custom CSS
+    </label>
+    <textarea class="form-control" rows="8" @bind="@Post.Css"></textarea>
+</div>
 <hr />
 <div class="post-elements d-flex flex-column mb-4 gap-3">
 @foreach(var (element, i) in Post.Elements.Select((item, index) => (item, index)))

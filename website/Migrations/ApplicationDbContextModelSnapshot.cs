@@ -374,6 +374,10 @@ namespace PublicCMS.Migrations
                     b.Property<DateTime>("CreatedAt")
                         .HasColumnType("datetime2");
 
+                    b.Property<string>("Css")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
+
                     b.Property<Guid?>("FeaturedImageGuid")
                         .HasColumnType("uniqueidentifier");
 
