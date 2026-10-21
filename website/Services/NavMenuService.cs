@@ -1,48 +1,29 @@
-﻿using Microsoft.EntityFrameworkCore;
-using PublicCMS.Data;
-using PublicCMS.Models;
+﻿using PublicCMS.Models;
+using PublicCMS.Repositories;
 
 namespace PublicCMS.Services;
 
 public class NavMenuService
 {
-    private readonly IDbContextFactory<ApplicationDbContext> contextFactory;
+    private readonly NavMenuRepository navMenuRepository;
 
-    public NavMenuService(IDbContextFactory<ApplicationDbContext> contextFactory)
+    public NavMenuService(NavMenuRepository navMenuRepository)
     {
-        this.contextFactory = contextFactory;
+        this.navMenuRepository = navMenuRepository;
     }
 
     public async Task<List<NavMenuItem>> GetMenuItemsAsync()
     {
-        await using var context = await contextFactory.CreateDbContextAsync();
-        return await context.NavMenuItems
-            .OrderBy(n => n.Order)
-            .ToListAsync();
+        return await navMenuRepository.GetMenuItemsAsync();
     }
 
-    public async Task SaveMenuItems(List<NavMenuItem> menuItems)
+    public async Task SaveMenuItemsAsync(List<NavMenuItem> menuItems)
     {
-        await using var context = await contextFactory.CreateDbContextAsync();
-        var previousItems = await context.NavMenuItems.ToListAsync();
-        var incomingIds = menuItems.Select(i => i.Id).ToHashSet();
-
-        context.RemoveRange(previousItems.Where(p => !incomingIds.Contains(p.Id)));
-
-        foreach (var (item, index) in menuItems.Select((item, index) => (item, index)))
+        for (var i = 0; i < menuItems.Count; i++)
         {
-            item.Order = index;
-            var match = previousItems.FirstOrDefault(p => p.Id == item.Id);
-            if (match is null)
-            {
-                context.NavMenuItems.Add(item);
-            }
-            else
-            {
-                context.Entry(match).CurrentValues.SetValues(item);
-            }
+            menuItems[i].Order = i;
         }
 
-        await context.SaveChangesAsync();
+        await navMenuRepository.SaveMenuItemsAsync(menuItems);
     }
 }

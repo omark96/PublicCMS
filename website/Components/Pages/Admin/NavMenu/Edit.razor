@@ -89,7 +89,7 @@
 
     private async Task Save()
     {
-        await navMenuService.SaveMenuItems(menuItems);
+        await navMenuService.SaveMenuItemsAsync(menuItems);
         navigationManager.NavigateTo(navigationManager.Uri, forceLoad: true);
     }
 }

@@ -1,29 +1,22 @@
-﻿using Microsoft.EntityFrameworkCore;
-using PublicCMS_API.Data;
-using PublicCMS_API.Models;
+﻿using PublicCMS_API.Models;
+using PublicCMS_API.Repositories;
 
 namespace PublicCMS_API.Services;
 
 public class GalleryService
 {
-    private readonly ApiDbContext context;
+    private readonly GalleryRepository galleryRepository;
     private readonly IWebHostEnvironment env;
 
-    public GalleryService(ApiDbContext context, IWebHostEnvironment env)
+    public GalleryService(GalleryRepository galleryRepository, IWebHostEnvironment env)
     {
-        this.context = context;
+        this.galleryRepository = galleryRepository;
         this.env = env;
     }
 
     public async Task<List<GalleryDto>> GetGalleriesAsync()
     {
-        return await context.Galleries
-            .Select(g => new GalleryDto(
-                Guid: g.Guid,
-                Name: g.Name,
-                Images: new()
-                ))
-            .ToListAsync();
+        return await galleryRepository.GetAllAsync();
     }
 
     public async Task<GalleryDto> CreateGalleryAsync(string name)
@@ -33,8 +26,7 @@ public class GalleryService
             Name = name,
             Guid = Guid.NewGuid()
         };
-        context.Galleries.Add(gallery);
-        await context.SaveChangesAsync();
+        await galleryRepository.AddAsync(gallery);
 
         return new GalleryDto(
             gallery.Guid,
@@ -42,34 +34,21 @@ public class GalleryService
             []
             );
     }
+
     public async Task<GalleryDto?> GetGalleryAsync(Guid galleryGuid)
     {
-        var gallery = await context.Galleries
-            .Where(g => g.Guid == galleryGuid)
-            .Select(g => new GalleryDto(
-                g.Guid,
-                g.Name,
-                g.Images.Select(i => new GalleryImageDto(i.Guid, i.Name)
-                )
-                .ToList()))
-            .FirstOrDefaultAsync();
-
-        return gallery;
+        return await galleryRepository.GetDtoByGuidAsync(galleryGuid);
     }
 
     public async Task<List<GalleryImage>> GetImagesAsync(Guid galleryId)
     {
-        var gallery = await context.Galleries
-            .Include(g => g.Images)
-            .FirstOrDefaultAsync(g => g.Guid == galleryId);
-
-        return gallery?.Images.ToList() ?? [];
+        return await galleryRepository.GetImagesAsync(galleryId);
     }
 
     public async Task<GalleryImage> UploadImageAsync(Guid galleryGuid, Stream stream, string fileName)
     {
         List<String> allowedExtensions = [".jpg", ".png", ".jpeg", ".gif", ".webp"];
-        var gallery = await context.Galleries.SingleOrDefaultAsync(g => g.Guid == galleryGuid);
+        var gallery = await galleryRepository.GetByGuidAsync(galleryGuid);
         if (gallery is null)
         {
             throw new KeyNotFoundException($"Gallery {galleryGuid} not found");
@@ -97,13 +76,12 @@ public class GalleryService
             Guid = imageGuid,
             Name = Path.GetFileNameWithoutExtension(fileName),
             Path = relativePath,
-            Gallery = gallery
+            GalleryId = gallery.Id
         };
 
         try
         {
-            context.Images.Add(image);
-            await context.SaveChangesAsync();
+            await galleryRepository.AddImageAsync(image);
         }
         catch
         {
@@ -115,38 +93,36 @@ public class GalleryService
 
     internal async Task<GalleryImage?> GetImageAsync(Guid imageId)
     {
-        return await context.Images.FirstOrDefaultAsync(i => i.Guid == imageId);
+        return await galleryRepository.GetImageAsync(imageId);
     }
 
     internal async Task RemoveGalleryAsync(Guid galleryId)
     {
-        Gallery? gallery = await context.Galleries.FirstOrDefaultAsync(g => g.Guid == galleryId);
-        if (gallery is not null)
+        await galleryRepository.RemoveAsync(galleryId);
+
+        var galleryPath = Path.Combine(env.WebRootPath, "uploads", galleryId.ToString());
+        if (Directory.Exists(galleryPath))
         {
-            context.Remove(gallery);
-            await context.SaveChangesAsync();
+            Directory.Delete(galleryPath, recursive: true);
         }
     }
 
-    internal async Task<Gallery?> UpdateGalleryAsync(Guid galleryId, string name)
+    internal async Task<GalleryDto?> UpdateGalleryAsync(Guid galleryId, string name)
     {
-        Gallery? gallery = await context.Galleries.FirstOrDefaultAsync(g => g.Guid == galleryId);
-        if (gallery is not null)
-        {
-            gallery.Name = name;
-            context.Update(gallery);
-            await context.SaveChangesAsync();
-        }
-        return gallery;
+        return await galleryRepository.UpdateNameAsync(galleryId, name);
     }
 
     internal async Task RemoveImageAsync(Guid imageGuid)
     {
-        GalleryImage? image = await context.Images.FirstOrDefaultAsync(i => i.Guid == imageGuid);
-        if (image is not null)
+        GalleryImage? image = await galleryRepository.GetImageAsync(imageGuid);
+        if (image is null)
         {
-            context.Remove(image);
-            await context.SaveChangesAsync();
+            return;
         }
+
+        await galleryRepository.RemoveImageAsync(imageGuid);
+
+        var fullPath = Path.Combine(env.WebRootPath, "uploads", image.Path);
+        File.Delete(fullPath);
     }
 }

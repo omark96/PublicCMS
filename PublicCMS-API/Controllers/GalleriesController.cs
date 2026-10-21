@@ -41,7 +41,7 @@ public class GalleriesController : ControllerBase
     }
 
     [HttpPut("{galleryId:guid}")]
-    public async Task<IActionResult> UpdateGallery(Guid galleryId, CreateGalleryRequest request)
+    public async Task<ActionResult<GalleryDto>> UpdateGallery(Guid galleryId, CreateGalleryRequest request)
     {
         var gallery = await galleryService.UpdateGalleryAsync(galleryId, request.Name);
 

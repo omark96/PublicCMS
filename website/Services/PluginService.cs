@@ -1,7 +1,6 @@
-﻿using Microsoft.EntityFrameworkCore;
-using PublicCMS.Data;
-using PublicCMS.Models.PageElements;
+﻿using PublicCMS.Models.PageElements;
 using PublicCMS.Models.Plugins;
+using PublicCMS.Repositories;
 using Scriban;
 using Scriban.Runtime;
 using System.Text.Json;
@@ -10,19 +9,16 @@ namespace PublicCMS.Services;
 
 public class PluginService
 {
-    private readonly IHttpClientFactory httpClientFactory;
-    private readonly IDbContextFactory<ApplicationDbContext> contextFactory;
+    private readonly PluginRepository pluginRepository;
 
-    public PluginService(IHttpClientFactory httpClientFactory, IDbContextFactory<ApplicationDbContext> contextFactory)
+    public PluginService(PluginRepository pluginRepository)
     {
-        this.httpClientFactory = httpClientFactory;
-        this.contextFactory = contextFactory;
+        this.pluginRepository = pluginRepository;
     }
+
     public async Task<List<PluginOptionDto>> GetOptionsAsync(OptionSource source)
     {
-        var client = httpClientFactory.CreateClient();
-
-        var items = await client.GetFromJsonAsync<List<JsonElement>>(source.EndPoint) ?? [];
+        var items = await pluginRepository.GetOptionItemsAsync(source.EndPoint);
 
         List<PluginOptionDto> optionsList = [];
 
@@ -41,48 +37,29 @@ public class PluginService
 
     public async Task<PluginDefinition> CreatePluginDefinitionAsync(string pluginName)
     {
-        var context = await contextFactory.CreateDbContextAsync();
-        PluginDefinition newPlugin = new()
-        {
-            Name = pluginName
-        };
-
-        context.Add(newPlugin);
-
-        await context.SaveChangesAsync();
-
+        var newPlugin = new PluginDefinition { Name = pluginName };
+        await pluginRepository.AddAsync(newPlugin);
         return newPlugin;
     }
 
     public async Task RemovePluginDefinitionAsync(PluginDefinition plugin)
     {
-        var context = await contextFactory.CreateDbContextAsync();
-        await context.PluginDefinitions
-            .Where(p => p.Id == plugin.Id)
-            .ExecuteDeleteAsync();
+        await pluginRepository.DeleteAsync(plugin.Id);
     }
 
     public async Task<List<PluginDefinition>> GetPluginDefinitionsAsync()
     {
-        var context = await contextFactory.CreateDbContextAsync();
-        return await context.PluginDefinitions
-            .Include(p => p.OptionSources)
-            .ToListAsync();
+        return await pluginRepository.GetAllAsync();
     }
 
     public async Task SavePluginDefinitionAsync(PluginDefinition plugin)
     {
-        var context = await contextFactory.CreateDbContextAsync();
-        context.Update(plugin);
-        await context.SaveChangesAsync();
+        await pluginRepository.UpdateAsync(plugin);
     }
 
     internal async Task<string> RenderPlugin(PluginElement plugin)
     {
-        var client = httpClientFactory.CreateClient();
-
         var model = new ScriptObject();
-
         var options = new ScriptObject();
 
         foreach (var source in plugin.PluginDefinition.OptionSources)
@@ -93,20 +70,19 @@ public class PluginService
         model["options"] = options;
 
         var dataUrl = Template.Parse(plugin.PluginDefinition.DataEndpoint).Render(model);
-        using var response = await client.GetAsync(dataUrl);
-        if (!response.IsSuccessStatusCode)
+
+        using var doc = await pluginRepository.GetPluginDataAsync(dataUrl);
+        if (doc is null)
         {
             return """<p class="text-danger"> COULDN'T GET PLUGIN DATA </p>""";
         }
-        var doc = JsonDocument.Parse(await response.Content.ReadAsStringAsync());
+
         model["data"] = ToScriban(doc.RootElement);
 
         var context = new TemplateContext { LoopLimit = 1000 };
         context.PushGlobal(model);
 
-        string html = Template.Parse(plugin.PluginDefinition.Template).Render(context);
-
-        return html;
+        return Template.Parse(plugin.PluginDefinition.Template).Render(context);
     }
 
     internal static object? ToScriban(JsonElement e)

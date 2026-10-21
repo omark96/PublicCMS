@@ -1,115 +1,66 @@
 ﻿using Microsoft.AspNetCore.Components.Forms;
 using PublicCMS.Models;
-using System.Net.Http.Headers;
+using PublicCMS.Repositories;
 
 namespace PublicCMS.Services;
 
 public class GalleryService
 {
-    private readonly IHttpClientFactory httpClientFactory;
+    private readonly GalleryRepository galleryRepository;
 
-    public GalleryService(IHttpClientFactory httpClientFactory)
+    public GalleryService(GalleryRepository galleryRepository)
     {
-        this.httpClientFactory = httpClientFactory;
+        this.galleryRepository = galleryRepository;
     }
 
     public async Task<List<Gallery>> GetGalleriesAsync()
     {
-        var client = httpClientFactory.CreateClient("Api");
-        return await client.GetFromJsonAsync<List<Gallery>>("api/galleries") ?? [];
+        return await galleryRepository.GetGalleriesAsync();
 
     }
 
     public async Task<Gallery?> GetGalleryAsync(Guid guid)
     {
-        var client = httpClientFactory.CreateClient("Api");
-        return await client.GetFromJsonAsync<Gallery>($"api/galleries/{guid}");
+        return await galleryRepository.GetGalleryAsync(guid);
     }
 
     public async Task<Gallery?> CreateGalleryAsync(string name)
     {
-        var client = httpClientFactory.CreateClient("Api");
-        var response = await client.PostAsJsonAsync("api/galleries", new { Name = name });
-
-        response.EnsureSuccessStatusCode();
-
-        var gallery = await response.Content.ReadFromJsonAsync<Gallery>();
-
-        return gallery;
+        return await galleryRepository.CreateGalleryAsync(name);
     }
     internal async Task RemoveGalleryAsync(Guid guid)
     {
-        var client = httpClientFactory.CreateClient("Api");
-
-        await client.DeleteAsync($"api/galleries/{guid}");
+        await galleryRepository.RemoveGalleryAsync(guid);
     }
 
     public async Task<Gallery?> UpdateGalleryAsync(Gallery gallery)
     {
-        var client = httpClientFactory.CreateClient("Api");
-        var response = await client.PutAsJsonAsync($"api/galleries/{gallery.Guid}", new { Name = gallery.Name });
-
-        if (!response.IsSuccessStatusCode)
-        {
-            return null;
-        }
-
-        return await response.Content.ReadFromJsonAsync<Gallery>();
+        return await galleryRepository.UpdateGalleryAsync(gallery);
     }
 
     public async Task<List<GalleryImage>> GetImagesAsync(Guid guid)
     {
-        var client = httpClientFactory.CreateClient("Api");
-        return await client.GetFromJsonAsync<List<GalleryImage>>($"/api/galleries/{guid}/images") ?? [];
-
+        return await galleryRepository.GetImagesAsync(guid);
     }
 
     public async Task<List<GalleryImage>> UploadImagesAsync(Guid guid, IReadOnlyList<IBrowserFile> files)
     {
-        var client = httpClientFactory.CreateClient("Api");
-
-        using var form = new MultipartFormDataContent();
-
         List<GalleryImage> uploaded = [];
 
         foreach (var file in files)
         {
-            var image = await UploadImageAsync(guid, file);
+            var image = await galleryRepository.UploadImageAsync(guid, file);
             if (image is not null)
             {
                 uploaded.Add(image);
             }
         }
-
         return uploaded;
-    }
-
-    public async Task<GalleryImage?> UploadImageAsync(Guid guid, IBrowserFile file)
-    {
-        var client = httpClientFactory.CreateClient("Api");
-
-        using var form = new MultipartFormDataContent();
-
-        var fileContent = new StreamContent(file.OpenReadStream(maxAllowedSize: 20 * 1024 * 1024));
-        fileContent.Headers.ContentType = new MediaTypeHeaderValue(file.ContentType);
-        form.Add(fileContent, "files", file.Name);
-
-        var response = await client.PostAsync($"api/galleries/{guid}/images", form);
-
-        if (!response.IsSuccessStatusCode)
-        {
-            return null;
-        }
-
-        List<GalleryImage> images = await response.Content.ReadFromJsonAsync<List<GalleryImage>>() ?? [];
-        return images.FirstOrDefault();
     }
 
     internal async Task RemoveImageAsync(Guid guid)
     {
-        var client = httpClientFactory.CreateClient("Api");
-
-        await client.DeleteAsync($"api/images/{guid}");
+        await galleryRepository.RemoveImageAsync(guid);
     }
 
 }

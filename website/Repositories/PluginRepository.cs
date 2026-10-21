@@ -1,0 +1,67 @@
+﻿using Microsoft.EntityFrameworkCore;
+using PublicCMS.Data;
+using PublicCMS.Models.Plugins;
+using System.Text.Json;
+
+namespace PublicCMS.Repositories;
+
+public class PluginRepository
+{
+    private readonly IHttpClientFactory httpClientFactory;
+    private readonly IDbContextFactory<ApplicationDbContext> contextFactory;
+
+    public PluginRepository(IHttpClientFactory httpClientFactory, IDbContextFactory<ApplicationDbContext> contextFactory)
+    {
+        this.httpClientFactory = httpClientFactory;
+        this.contextFactory = contextFactory;
+    }
+
+    public async Task<List<JsonElement>> GetOptionItemsAsync(string endpoint)
+    {
+        var client = httpClientFactory.CreateClient();
+        return await client.GetFromJsonAsync<List<JsonElement>>(endpoint) ?? [];
+    }
+
+    public async Task<JsonDocument?> GetPluginDataAsync(string url)
+    {
+        var client = httpClientFactory.CreateClient();
+        using var response = await client.GetAsync(url);
+        if (!response.IsSuccessStatusCode)
+        {
+            return null;
+        }
+
+        await using var stream = await response.Content.ReadAsStreamAsync();
+        return await JsonDocument.ParseAsync(stream);
+    }
+
+    public async Task AddAsync(PluginDefinition plugin)
+    {
+        await using var context = await contextFactory.CreateDbContextAsync();
+        context.Add(plugin);
+        await context.SaveChangesAsync();
+    }
+
+    public async Task DeleteAsync(int id)
+    {
+        await using var context = await contextFactory.CreateDbContextAsync();
+        await context.PluginDefinitions
+            .Where(p => p.Id == id)
+            .ExecuteDeleteAsync();
+    }
+
+    public async Task<List<PluginDefinition>> GetAllAsync()
+    {
+        await using var context = await contextFactory.CreateDbContextAsync();
+        return await context.PluginDefinitions
+            .Include(p => p.OptionSources)
+            .ToListAsync();
+    }
+
+    public async Task UpdateAsync(PluginDefinition plugin)
+    {
+        await using var context = await contextFactory.CreateDbContextAsync();
+        context.Update(plugin);
+        await context.SaveChangesAsync();
+    }
+}

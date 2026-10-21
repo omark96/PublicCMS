@@ -1,7 +1,6 @@
-﻿using Microsoft.EntityFrameworkCore;
-using PublicCMS.Data;
-using PublicCMS.Models;
+﻿using PublicCMS.Models;
 using PublicCMS.Models.PageElements;
+using PublicCMS.Repositories;
 using PublicCMS.Utils;
 using System.Text;
 
@@ -9,87 +8,63 @@ namespace PublicCMS.Services;
 
 public class PostService
 {
-    public IDbContextFactory<ApplicationDbContext> ContextFactory { get; }
+    private readonly PostRepository postRepository;
 
-    public PostService(IDbContextFactory<ApplicationDbContext> contextFactory)
+    public PostService(PostRepository postRepository)
     {
-        ContextFactory = contextFactory;
+        this.postRepository = postRepository;
     }
 
     public async Task<List<Post>> GetAllPostsAsync()
     {
-        await using var context = await ContextFactory.CreateDbContextAsync();
-        return await context.Posts.ToListAsync();
+        return await postRepository.GetAllAsync();
     }
 
     public async Task<List<Post>> GetAllBlogPostsAsync()
     {
-        await using var context = await ContextFactory.CreateDbContextAsync();
-        return await context.Posts
-            .Where(p => p.IsBlogPost)
-            .ToListAsync();
-    }
-
-    public async Task CreatePostAsync(Post post)
-    {
-        await using var context = await ContextFactory.CreateDbContextAsync();
-        post.CreatedAt = DateTime.UtcNow;
-        post.Summary = GenerateSummary(post);
-        post.Slug = post.Title.Slugify();
-        context.Posts.Add(post);
-        await context.SaveChangesAsync();
-    }
-
-    public async Task RemovePostAsync(Post post)
-    {
-        await using var context = await ContextFactory.CreateDbContextAsync();
-        await context.Posts
-            .Where(p => p.Id == post.Id)
-            .ExecuteDeleteAsync();
-
-    }
-
-    public async Task<bool> PostHasValidSlug(Post post)
-    {
-        await using var context = await ContextFactory.CreateDbContextAsync();
-        string slug = post.Title.Slugify();
-        var existing = await context.Posts.AnyAsync(p => p.Slug == slug && p.Id != post.Id);
-        return !existing;
+        return await postRepository.GetAllBlogPostsAsync();
     }
 
     public async Task<Post?> GetPostAsync(int id)
     {
-        await using var context = await ContextFactory.CreateDbContextAsync();
-        return await context.Posts
-            .Include(p => p.Elements.OrderBy(e => e.Order))
-            .AsNoTracking()
-            .FirstOrDefaultAsync(p => p.Id == id);
+        return await postRepository.GetByIdAsync(id);
     }
+
     public async Task<Post?> GetPostBySlugAsync(string slug)
     {
-        await using var context = await ContextFactory.CreateDbContextAsync();
-        return await context.Posts
-            .Include(p => p.Elements.OrderBy(e => e.Order))
-            .AsNoTracking()
-            .FirstOrDefaultAsync(p => p.Slug == slug);
+        return await postRepository.GetBySlugAsync(slug);
+    }
+
+    public async Task CreatePostAsync(Post post)
+    {
+        post.CreatedAt = DateTime.UtcNow;
+        post.Summary = GenerateSummary(post);
+        post.Slug = post.Title.Slugify();
+        await postRepository.AddAsync(post);
     }
 
     public async Task UpdatePostAsync(Post post)
     {
-        await using var context = await ContextFactory.CreateDbContextAsync();
         post.Summary = GenerateSummary(post);
         post.Slug = post.Title.Slugify();
-        context.Posts.Update(post);
-        await context.SaveChangesAsync();
+        await postRepository.UpdateAsync(post);
+    }
+
+    public async Task RemovePostAsync(Post post)
+    {
+        await postRepository.DeleteAsync(post.Id);
+    }
+
+    public async Task<bool> PostHasValidSlug(Post post)
+    {
+        string slug = post.Title.Slugify();
+        bool exists = await postRepository.SlugExistsAsync(slug, post.Id);
+        return !exists;
     }
 
     public async Task IncrementVisitorCountAsync(int postId)
     {
-        await using var context = await ContextFactory.CreateDbContextAsync();
-        await context.Posts
-            .Where(p => p.Id == postId)
-            .ExecuteUpdateAsync(
-            s => s.SetProperty(p => p.VisitorCount, p => p.VisitorCount + 1));
+        await postRepository.IncrementVisitorCountAsync(postId);
     }
 
     private string GenerateSummary(Post post, int summaryLength = 100)

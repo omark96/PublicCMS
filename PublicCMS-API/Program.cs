@@ -1,6 +1,7 @@
 
 using Microsoft.EntityFrameworkCore;
 using PublicCMS_API.Data;
+using PublicCMS_API.Repositories;
 using PublicCMS_API.Services;
 
 namespace PublicCMS_API;
@@ -18,10 +19,12 @@ public class Program
         builder.Services.AddOpenApi();
 
         var connectionString = builder.Configuration.GetConnectionString("DefaultConnection") ?? throw new InvalidOperationException("Connection string 'DefaultConnection' not found.");
-        builder.Services.AddDbContext<ApiDbContext>(options =>
+        builder.Services.AddDbContextFactory<ApiDbContext>(options =>
             options.UseSqlServer(connectionString,
         x => x.MigrationsHistoryTable("__EFMigrationsHistory", "api")
         ));
+
+        builder.Services.AddScoped<GalleryRepository>();
 
         builder.Services.AddScoped<GalleryService>();
 

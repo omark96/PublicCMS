@@ -1,21 +1,20 @@
-﻿using Microsoft.EntityFrameworkCore;
-using PublicCMS.Data;
-using PublicCMS.Models;
+﻿using PublicCMS.Models;
+using PublicCMS.Repositories;
 
 namespace PublicCMS.Services;
 
 public class ThemeService
 {
-    private readonly ApplicationDbContext context;
+    private readonly ThemeRepository themeRepository;
 
-    public ThemeService(ApplicationDbContext context)
+    public ThemeService(ThemeRepository themeRepository)
     {
-        this.context = context;
+        this.themeRepository = themeRepository;
     }
 
     public async Task<List<Theme>> GetThemesAsync()
     {
-        return await context.Themes.ToListAsync();
+        return await themeRepository.GetAllAsync();
     }
 
     public async Task<Theme> CreateThemeAsync(string name)
@@ -23,47 +22,35 @@ public class ThemeService
         Theme newTheme = Theme.DefaultTheme();
         newTheme.Name = name;
 
-        context.Themes.Add(newTheme);
-
-        await context.SaveChangesAsync();
+        await themeRepository.AddAsync(newTheme);
 
         return newTheme;
     }
 
     public async Task<Theme?> GetThemeAsync(int id)
     {
-        return await context.Themes.FirstOrDefaultAsync(t => t.Id == id);
+        return await themeRepository.GetByIdAsync(id);
     }
 
     public async Task SaveThemeAsync(Theme theme)
     {
         theme.GenerateCss();
-        context.Themes.Update(theme);
-        await context.SaveChangesAsync();
+        await themeRepository.UpdateAsync(theme);
     }
 
     public async Task SetSelectedThemeAsync(Theme theme)
     {
-        var current = await context.Themes
-            .FirstOrDefaultAsync(t => t.IsSelected);
-        if (current is not null)
-        {
-            current.IsSelected = false;
-        }
-
+        await themeRepository.SetSelectedAsync(theme.Id);
         theme.IsSelected = true;
-        await context.SaveChangesAsync();
     }
 
     public async Task<Theme?> GetSelectedThemeAsync(Theme theme)
     {
-        return await context.Themes.FirstOrDefaultAsync(t => t.IsSelected);
+        return await themeRepository.GetSelectedAsync();
     }
 
     public async Task RemoveThemeAsync(Theme theme)
     {
-        context.Themes.Remove(theme);
-
-        await context.SaveChangesAsync();
+        await themeRepository.RemoveAsync(theme);
     }
 }

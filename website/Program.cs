@@ -4,6 +4,7 @@ using Microsoft.EntityFrameworkCore;
 using PublicCMS.Components;
 using PublicCMS.Components.Account;
 using PublicCMS.Data;
+using PublicCMS.Repositories;
 using PublicCMS.Services;
 
 namespace PublicCMS;
@@ -39,6 +40,13 @@ public class Program
         builder.Services.AddScoped<ThemeService>();
         builder.Services.AddScoped<PluginService>();
         builder.Services.AddScoped<SiteSectionService>();
+
+        builder.Services.AddScoped<PostRepository>();
+        builder.Services.AddScoped<GalleryRepository>();
+        builder.Services.AddScoped<NavMenuRepository>();
+        builder.Services.AddScoped<ThemeRepository>();
+        builder.Services.AddScoped<PluginRepository>();
+        builder.Services.AddScoped<SiteSectionRepository>();
 
         builder.Services.AddHttpClient("Api", h =>
         {
