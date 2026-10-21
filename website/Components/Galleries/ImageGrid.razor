@@ -1,10 +1,11 @@
-﻿<div class="row row-cols-2" >
+﻿@inject IOptions<ApiSettings> Api
+<div class="row row-cols-2" >
     @foreach (var image in Images)
     {
         <div class="col d-flex p-2 justify-content-center">
             <img class="img-fluid @(image.Guid == SelectedImage?.Guid ? "border border-primary" : "") "
             style="max-height: 150px; object-fit:contain; cursor: pointer;" 
-            src="https://localhost:7272/api/images/@image.Guid" 
+            src="@Api.Value.ImageUrl(image.Guid)" 
             @onclick="() => SelectedImage = image"
             />
         </div>
