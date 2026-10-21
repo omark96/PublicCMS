@@ -22,11 +22,15 @@
 @if(editting) {
 <div class="mb-4">
 	<label class="form-label">Title:</label>
-	<input class="form-control" @bind-value="Post.Title" />
+	<input class="form-control" @bind="Post.Title" />
     @if (invalidSlug)
     {
         <span class="text-danger">Need a unique slug generated from title</span>
     }
+</div>
+<div class="mb-4">
+    <label class="form-label">Blog post:</label>
+    <input type="checkbox" @bind="Post.IsBlogPost"/>
 </div>
 <div>
     <h5>Featured image:</h5>

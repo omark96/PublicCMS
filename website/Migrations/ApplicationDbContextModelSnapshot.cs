@@ -377,6 +377,9 @@ namespace PublicCMS.Migrations
                     b.Property<Guid?>("FeaturedImageGuid")
                         .HasColumnType("uniqueidentifier");
 
+                    b.Property<bool>("IsBlogPost")
+                        .HasColumnType("bit");
+
                     b.Property<string>("Slug")
                         .IsRequired()
                         .HasColumnType("nvarchar(450)");

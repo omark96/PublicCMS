@@ -22,6 +22,14 @@ public class PostService
         return await context.Posts.ToListAsync();
     }
 
+    public async Task<List<Post>> GetAllBlogPostsAsync()
+    {
+        await using var context = await ContextFactory.CreateDbContextAsync();
+        return await context.Posts
+            .Where(p => p.IsBlogPost)
+            .ToListAsync();
+    }
+
     public async Task CreatePostAsync(Post post)
     {
         await using var context = await ContextFactory.CreateDbContextAsync();

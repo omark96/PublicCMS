@@ -38,6 +38,6 @@
 
     protected override async Task OnInitializedAsync()
     {
-        Posts = await postService.GetAllPostsAsync();
+        Posts = await postService.GetAllBlogPostsAsync();
     }
 }
