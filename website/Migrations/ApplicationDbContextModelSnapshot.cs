@@ -403,6 +403,30 @@ namespace PublicCMS.Migrations
                     b.ToTable("Posts", "website");
                 });
 
+            modelBuilder.Entity("PublicCMS.Models.SiteSection", b =>
+                {
+                    b.Property<int>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("int");
+
+                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
+
+                    b.Property<string>("HTML")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<string>("Name")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(450)");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("Name")
+                        .IsUnique();
+
+                    b.ToTable("SiteSections", "website");
+                });
+
             modelBuilder.Entity("PublicCMS.Models.Theme", b =>
                 {
                     b.Property<int>("Id")

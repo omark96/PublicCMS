@@ -1,0 +1,92 @@
+﻿@page "/admin/sitesections"
+@attribute [Authorize(Roles = "Admin")]
+@inject SiteSectionService siteSectionService
+@inject NavigationManager navigationManager
+@rendermode InteractiveServer
+@attribute [Authorize(Roles = "Admin")]
+
+<h3>Site sections</h3>
+
+<div class="mb-2">
+    <label class="form-label">
+        Select site section:
+    </label>
+    <select class="form-select" @bind="selectedSiteSectionId">
+        @foreach(var siteSection in siteSections)
+        {
+            <option value="@siteSection.Id">@siteSection.Name</option>
+        }
+    </select>
+</div>
+<button class="btn btn-primary" @onclick="AddSiteSection">New section</button>
+<hr />
+
+@if(SelectedSiteSection is not null)
+{
+    <h4>@SelectedSiteSection.Name</h4>
+    <div>
+        <label class="form-label">
+            Name:
+        </label>
+        <input class="form-control" @bind="@SelectedSiteSection.Name"></input>
+        @if (invalidName)
+        {
+            <span class="text-danger">Need a unique name for section</span>
+        }
+    </div>
+    <div>
+        <label class="form-label">
+            HTML:
+        </label>
+        <textarea class="form-control" rows="12" @bind="@SelectedSiteSection.HTML"></textarea>
+    </div>
+    <div class="d-flex justify-content-end mt-2 gap-2">
+        <button class="btn btn-danger" @onclick="Remove">Delete</button>
+        <button class="btn btn-primary" @onclick="Save">Save</button>
+    </div>
+}
+
+@code {
+    private List<SiteSection> siteSections = [];
+    private int selectedSiteSectionId;
+    private bool invalidName;
+
+    private SiteSection? SelectedSiteSection => siteSections.FirstOrDefault(s => s.Id == selectedSiteSectionId);
+
+    protected override async Task OnInitializedAsync()
+    {
+        siteSections = await siteSectionService.GetSiteSectionsAsync();
+        selectedSiteSectionId = siteSections.FirstOrDefault()?.Id ?? 0;
+    }
+
+    public async Task AddSiteSection()
+    {
+        SiteSection newSection = await siteSectionService.CreateSiteSectionAsync();
+        siteSections.Add(newSection);
+        selectedSiteSectionId = newSection.Id;
+    }
+
+    private async Task Save()
+    {
+        if (!await siteSectionService.SiteSectionHasValidName(SelectedSiteSection))
+        {
+            invalidName = true;
+            return;
+        }
+        await siteSectionService.SaveSiteSectionAsync(SelectedSiteSection);
+        invalidName = false;
+        navigationManager.NavigateTo(navigationManager.Uri, forceLoad: true);
+    }
+
+    private async Task Remove()
+    {
+        if(SelectedSiteSection is null)
+        {
+            return;
+        }
+
+        await siteSectionService.RemoveSiteSectionAsync(SelectedSiteSection);
+        siteSections.Remove(SelectedSiteSection);
+        selectedSiteSectionId = siteSections.FirstOrDefault()?.Id ?? 0;
+    }
+}

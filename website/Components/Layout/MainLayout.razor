@@ -1,17 +1,28 @@
 ﻿@inherits LayoutComponentBase
+@inject SiteSectionService siteSectionService
 
 <div class="page">
     <div class="sidebar">
         <NavMenu />
     </div>
 
-    <main>
+    <main class="d-flex flex-column min-vh-100">
         <div class="top-row px-4">
+            @if(topbar is not null)
+            {
+                @((MarkupString)topbar.HTML)
+            }
         </div>
 
-        <article class="content px-4 m-auto" style="max-width: 1200px;">
+        <article class="content px-4 m-auto flex-grow-1 w-100" style="max-width: 1200px;">
             @Body
         </article>
+        @if(footer is not null)
+        {
+            <footer>
+                @((MarkupString)footer.HTML)
+            </footer>
+        }
     </main>
 </div>
 
@@ -20,3 +31,14 @@
     <a href="." class="reload">Reload</a>
     <span class="dismiss">🗙</span>
 </div>
+
+@code{
+    private SiteSection? footer;
+    private SiteSection? topbar;
+
+    protected override async Task OnInitializedAsync()
+    {
+        footer = await siteSectionService.GetSiteSectionByNameAsync("footer");
+        topbar = await siteSectionService.GetSiteSectionByNameAsync("topbar");
+    }
+}

@@ -16,6 +16,7 @@ public class ApplicationDbContext(DbContextOptions<ApplicationDbContext> options
     public DbSet<Theme> Themes { get; set; }
     public DbSet<PluginDefinition> PluginDefinitions { get; set; }
     public DbSet<OptionSource> OptionSources { get; set; }
+    public DbSet<SiteSection> SiteSections { get; set; }
 
 
     protected override void OnModelCreating(ModelBuilder builder)
@@ -26,6 +27,10 @@ public class ApplicationDbContext(DbContextOptions<ApplicationDbContext> options
 
         builder.Entity<Post>()
             .HasIndex(p => p.Slug)
+            .IsUnique();
+
+        builder.Entity<SiteSection>()
+            .HasIndex(s => s.Name)
             .IsUnique();
 
         builder.Entity<PostElement>()
