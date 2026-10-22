@@ -115,7 +115,20 @@ public class Program
         using (var scope = app.Services.CreateScope())
         {
             var db = scope.ServiceProvider.GetRequiredService<ApplicationDbContext>();
-            db.Database.Migrate();
+
+            int maxAttempts = 20;
+            for (int i = 0; ; i++)
+            {
+                try
+                {
+                    db.Database.Migrate();
+                    break;
+                }
+                catch when (i < maxAttempts)
+                {
+                    await Task.Delay(5000);
+                }
+            }
 
             var roleManager = scope.ServiceProvider.GetRequiredService<RoleManager<IdentityRole>>();
             var userManager = scope.ServiceProvider.GetRequiredService<UserManager<ApplicationUser>>();

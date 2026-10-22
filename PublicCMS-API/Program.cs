@@ -8,7 +8,7 @@ namespace PublicCMS_API;
 
 public class Program
 {
-    public static void Main(string[] args)
+    public static async Task Main(string[] args)
     {
         var builder = WebApplication.CreateBuilder(args);
 
@@ -48,7 +48,19 @@ public class Program
         using (var scope = app.Services.CreateScope())
         {
             var db = scope.ServiceProvider.GetRequiredService<ApiDbContext>();
-            db.Database.Migrate();
+            int maxAttempts = 20;
+            for (int i = 0; ; i++)
+            {
+                try
+                {
+                    db.Database.Migrate();
+                    break;
+                }
+                catch when (i < maxAttempts)
+                {
+                    await Task.Delay(5000);
+                }
+            }
         }
 
         app.Run();
