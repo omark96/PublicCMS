@@ -4,6 +4,9 @@ using PublicCMS.Models;
 
 namespace PublicCMS.Repositories;
 
+// The project originally only used Services, but as I read the spec it required it to be split into both services and repositories.
+// AI was used to generate the split and no new functionality (except for where it was required based on the split) was added in this commit.
+// See the following commit for the split: https://github.com/omark96/PublicCMS/commit/d482e3fbc8f4ad34076ceea2caa3efb6e6eeaecb
 public class NavMenuRepository
 {
     private readonly IDbContextFactory<ApplicationDbContext> contextFactory;
