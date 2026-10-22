@@ -22,7 +22,7 @@ public class PluginRepository
         return await client.GetFromJsonAsync<List<JsonElement>>(endpoint) ?? [];
     }
 
-    public async Task<JsonDocument?> GetPluginDataAsync(string url)
+    public async Task<JsonElement?> GetPluginDataAsync(string url)
     {
         var client = httpClientFactory.CreateClient();
         using var response = await client.GetAsync(url);
@@ -30,9 +30,7 @@ public class PluginRepository
         {
             return null;
         }
-
-        await using var stream = await response.Content.ReadAsStreamAsync();
-        return await JsonDocument.ParseAsync(stream);
+        return await response.Content.ReadFromJsonAsync<JsonElement>();
     }
 
     public async Task AddAsync(PluginDefinition plugin)
