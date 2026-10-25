@@ -1,6 +1,6 @@
-﻿using Microsoft.AspNetCore.Components.Forms;
+﻿using System.Net.Http.Headers;
+using Microsoft.AspNetCore.Components.Forms;
 using PublicCMS.Models;
-using System.Net.Http.Headers;
 
 namespace PublicCMS.Repositories;
 
@@ -67,6 +67,9 @@ public class GalleryRepository
 
     }
 
+    // This was planned to be done through a single upload with multiple images at once.
+    // However I couldn't get it to work properly so I switched to uploading each image individually.
+    // That's why the methods look weird uploading a single image as a list of images.
     public async Task<GalleryImage?> UploadImageAsync(Guid guid, IBrowserFile file)
     {
         var client = httpClientFactory.CreateClient("Api");
