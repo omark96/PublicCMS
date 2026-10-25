@@ -1,9 +1,12 @@
-﻿using Microsoft.AspNetCore.Components.Forms;
+﻿using System.Net.Http.Headers;
+using Microsoft.AspNetCore.Components.Forms;
 using PublicCMS.Models;
-using System.Net.Http.Headers;
 
 namespace PublicCMS.Repositories;
 
+// The project originally only used Services, but as I read the spec it required it to be split into both services and repositories.
+// AI was used to generate the split and no new functionality (except for where it was required based on the split) was added in this commit.
+// See the following commit for the split: https://github.com/omark96/PublicCMS/commit/d482e3fbc8f4ad34076ceea2caa3efb6e6eeaecb
 public class GalleryRepository
 {
     private readonly IHttpClientFactory httpClientFactory;
@@ -64,6 +67,9 @@ public class GalleryRepository
 
     }
 
+    // This was planned to be done through a single upload with multiple images at once.
+    // However I couldn't get it to work properly so I switched to uploading each image individually.
+    // That's why the methods look weird uploading a single image as a list of images.
     public async Task<GalleryImage?> UploadImageAsync(Guid guid, IBrowserFile file)
     {
         var client = httpClientFactory.CreateClient("Api");
